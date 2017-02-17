@@ -1,4 +1,12 @@
 /build
 *.iml
 proguard-rules.pro
+# idea setting.
 .idea
+
+# gradle setting.
+.gradle
+/src/gradlew
+/src/gradlew.bar
+/src/local.properties
+/src/gradle.properties
