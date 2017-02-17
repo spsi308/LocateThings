@@ -1,10 +1,11 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fitsSystemWindows="true" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cn.spsilab.locatethings.loginmodule.RegistFragment">
 
     <RelativeLayout
-        android:id="@+id/layout_login"
+        android:id="@+id/layout_regist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -12,7 +13,7 @@
         android:gravity="center" >
 
         <LinearLayout
-            android:id="@+id/layout_user_login"
+            android:id="@+id/layout_user_regist"
             android:layout_marginTop="60dp"
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -22,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
-                    android:id="@+id/edit_login_user_name"
+                    android:id="@+id/edit_regist_user_name"
                     android:paddingLeft="60dp"
                     android:paddingRight="40dp"
                     android:layout_width="match_parent"
@@ -36,7 +37,7 @@
                     android:src="@drawable/login"
                     />
                 <Button
-                    android:id="@+id/btn_clear_user_name"
+                    android:id="@+id/btn_regist_clear_user_name"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/clear"
@@ -48,11 +49,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
-                    android:id="@+id/edit_login_password"
-                    android:inputType="textPassword"
+                    android:id="@+id/edit_regist_phone"
+                    android:inputType="phone"
                     android:paddingLeft="60dp"
                     android:paddingRight="40dp"
-                    android:hint="@string/str_login_user_password"
+                    android:hint="@string/str_regist_phone"
                     android:layout_width="match_parent"
                     android:layout_height="60dp" />
                 <ImageView
@@ -60,7 +61,7 @@
                     android:layout_height="52dp"
                     android:padding="8dp"
                     android:layout_gravity="start|center_vertical"
-                    android:src="@drawable/password"
+                    android:src="@drawable/phone"
                     />
                 <Button
                     android:id="@+id/btn_clear_user_password"
@@ -71,38 +72,46 @@
                     />
             </FrameLayout>
 
-        </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/edit_regist_password"
+                    android:inputType="textPassword"
+                    android:paddingLeft="60dp"
+                    android:paddingRight="40dp"
+                    android:hint="@string/str_regist_user_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp" />
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:padding="8dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:src="@drawable/password"
+                    />
+                <Button
+                    android:id="@+id/btn_clear_user_email"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/clear"
+                    android:layout_gravity="end|center_vertical"
+                    />
+            </FrameLayout>
 
+
+        </LinearLayout>
         <Button
-            android:id="@+id/btn_login"
+            android:id="@+id/btn_regist"
             android:layout_width="fill_parent"
             android:layout_height="50dp"
-            android:layout_below="@id/layout_user_login"
+            android:layout_below="@id/layout_user_regist"
             android:layout_marginTop="30dp"
             android:background="#ff336699"
             android:textColor="@android:color/white"
 
             android:gravity="center"
-            android:text="@string/str_login_btn" />
-        <Button
-            android:id="@+id/btn_forget_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignRight="@id/btn_login"
-            android:layout_below="@id/btn_login"
-            android:background="#00000000"
-            android:text="@string/str_forget_password_btn"
-            android:textSize="16sp" />
-        <Button
-            android:id="@+id/btn_register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/btn_login"
-            android:layout_below="@id/btn_login"
-            android:background="#00000000"
-            android:gravity="start|center_vertical"
-            android:text="@string/str_regist_btn"
-            android:textSize="16sp"
-            android:visibility="visible" />
+            android:text="@string/str_regist_btn" />
     </RelativeLayout>
-</RelativeLayout>
+
+</FrameLayout>

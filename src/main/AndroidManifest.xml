@@ -7,11 +7,11 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".loginmodule.LoginActivity" android:theme="@style/AppTheme.ShowActionBar" android:parentActivityName=".MainActivity" android:label="Login">
+        </activity>
     </application>
 
 </manifest>

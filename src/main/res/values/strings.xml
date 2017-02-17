@@ -4,15 +4,33 @@
     <string name="on_drawer_open">on open</string>
     <string name="on_drawer_close">on close</string>
 
-    <string name="bottom_main">Main</string>
-    <string name="bottom_info">Me</string>
-
+    <!--menu-->
     <string name="str_menu_user_info">My Info</string>
     <string name="str_menu_app_about">About</string>
-
+    <!--Login Activity-->
     <string name="str_login_header">Login</string>
     <string name="str_login_user_name">UserName</string>
     <string name="str_login_user_password">Password</string>
     <string name="str_login_btn">Login</string>
+    <string name="str_forget_password_btn">忘记密码</string>
+    <!--Regist Fragment show-->
+    <string name="str_regist_header">regist</string>
+    <string name="str_regist_user_name">UserName</string>
+    <string name="str_regist_user_password">Password</string>
+    <string name="str_regist_phone">Phone</string>
+    <string name="str_regist_btn">regist</string>
+    <!--Find password Fragment-->
+    <string name="str_find_password_inform">你可以通过手机号进行修改密码</string>
+    <string name="str_find_password">手机号</string>
+    <string name="str_find_password_btn">确定</string>
+    <!--Check code Fragment-->
+    <string name="str_check_code_inform">请输入收到的验证码</string>
+    <string name="str_check_code">验证码</string>
+    <string name="str_check_code_btn">验证</string>
+    <!--Update password Fragment-->
+    <string name="str_update_password">请输入新密码</string>
+    <string name="str_update_password_repeat">请重新输入新密码</string>
+    <string name="str_update_password_btn">确定</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

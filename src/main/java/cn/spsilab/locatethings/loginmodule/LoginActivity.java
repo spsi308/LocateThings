@@ -1,4 +1,4 @@
-package cn.spsilab.locatethings;
+package cn.spsilab.locatethings.loginmodule;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import cn.spsilab.locatethings.R;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
@@ -32,8 +34,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         forgetPasswdBtn = (Button) findViewById(R.id.btn_forget_password);
         registBtn = (Button) findViewById(R.id.btn_register);
 
-        nameTextView = (TextView) findViewById(R.id.str_login_user_name);
-        passwdTextView = (TextView) findViewById(R.id.str_login_password);
+        nameTextView = (TextView) findViewById(R.id.edit_login_user_name);
+        passwdTextView = (TextView) findViewById(R.id.edit_login_password);
 
         clearNameBtn.setOnClickListener(this);
         clearPasswordBtn.setOnClickListener(this);
@@ -50,7 +52,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-        this.onBackPressed();
+        switch (v.getId()) {
+            case R.id.btn_clear_user_name :
+                //清除用户名的同时清除密码
+                nameTextView.setText("");
+            case R.id.btn_clear_user_password :
+                passwdTextView.setText("");
+                break;
+            case R.id.btn_login :
+                //登录
+                login();
+                break;
+            case R.id.btn_register :
+                regist();
+                break;
+            case R.id.btn_forget_password :
+                //
+
+
+        }
 
     }
+
+    private void login() {
+
+    }
+
+    private void regist(){}
+
 }

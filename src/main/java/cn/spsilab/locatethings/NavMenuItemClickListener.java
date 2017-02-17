@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
+import cn.spsilab.locatethings.loginmodule.LoginActivity;
+
 /**
  * Created by Feng on 2/17/2017.
  * navigation
