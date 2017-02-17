@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">LocateThings</string>
+
+    <string name="on_drawer_open">on open</string>
+    <string name="on_drawer_close">on close</string>
+
+    <string name="bottom_main">Main</string>
+    <string name="bottom_info">Me</string>
+
+    <string name="str_menu_user_info">My Info</string>
+    <string name="str_menu_app_about">About</string>
+
+    <string name="str_login_header">Login</string>
+    <string name="str_login_user_name">UserName</string>
+    <string name="str_login_user_password">Password</string>
+    <string name="str_login_btn">Login</string>
+
+</resources>
