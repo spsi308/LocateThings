@@ -5,8 +5,10 @@ proguard-rules.pro
 .idea
 
 # gradle setting.
-.gradle
-/src/gradlew
-/src/gradlew.bar
-/src/local.properties
-/src/gradle.properties
+.gradle/
+gradle/
+gradlew
+gradlew.bar
+gradlew.bat
+local.properties
+gradle.properties

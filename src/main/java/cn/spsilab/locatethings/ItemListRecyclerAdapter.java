@@ -87,12 +87,32 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
     }
 
     /**
-     * remove item in arrayList by position and notify data removed.
+     * remove item in arrayList by position, and notify data removed.
      * @param posi
      */
     public void adapterListRemoveItem(int posi) {
         mItemsArrayList.remove(posi);
 
         notifyItemRemoved(posi);
+    }
+
+    /**
+     * change item in arrayList by position, notify data changed.
+     * @param posi
+     * @param item
+     */
+    public void adapterListChangeItem(int posi, LittleItem item) {
+        LittleItem afterChanged = mItemsArrayList.get(posi);
+
+        // check if the item actually changed.
+        if (item.getItemName() != null) {
+            afterChanged.setItemName(item.getItemName());
+        }
+
+        if (item.getModuleId() != -1) {
+            afterChanged.setModuleId(item.getModuleId());
+        }
+
+        notifyItemChanged(posi);
     }
 }

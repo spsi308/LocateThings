@@ -1,8 +1,8 @@
 package cn.spsilab.locatethings;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,7 +21,8 @@ import cn.spsilab.locatethings.Data.LittleItem;
 import cn.spsilab.locatethings.Data.LocateThingsDatabase;
 import cn.spsilab.locatethings.Data.TestData;
 
-public class MainActivity extends AppCompatActivity implements ItemListRecyclerAdapter.ItemAdapterOnClickHandler{
+public class MainActivity extends AppCompatActivity implements
+        ItemListRecyclerAdapter.ItemAdapterOnClickHandler, ItemOperateHandler{
 
     private DrawerLayout drawerLayout;
 
@@ -108,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements ItemListRecyclerA
         switch (item.getItemId()){
             case R.id.btn_add :
                 //Toast.makeText(this,"add",Toast.LENGTH_SHORT).show();
+                FragmentManager fm = getFragmentManager();
+                AddItemDialog addDialog = new AddItemDialog();
+                addDialog.show(fm, "AddItemDialog");
                 break;
             case R.id.btn_setting :
                 Toast.makeText(this,"setting",Toast.LENGTH_SHORT).show();
@@ -120,6 +124,42 @@ public class MainActivity extends AppCompatActivity implements ItemListRecyclerA
 
     @Override
     public void listItemOnClick(int inListPosi) {
+        FragmentManager fm = getFragmentManager();
+        ItemDetailDialog itemDetailDialog = new ItemDetailDialog();
 
+        // attach data.
+        Bundle args = new Bundle();
+        args.putInt("inListPosi", inListPosi);
+        args.putSerializable("item", mRecyclerViewAdapter.getItemsArrayList().get(inListPosi));
+        itemDetailDialog.setArguments(args);
+
+        // show dialog.
+        itemDetailDialog.show(fm, "itemDetailDialog");
+    }
+
+    @Override
+    public void onItemChange(int inAdapterPosi, LittleItem item) {
+        long itemId = mRecyclerViewAdapter.getItemsArrayList().get(inAdapterPosi).getItemId();
+        // update sql
+        mDatabase.updateItemById(itemId, item);
+        // update recyclerView adapter
+        mRecyclerViewAdapter.adapterListChangeItem(inAdapterPosi, item);
+    }
+
+    @Override
+    public void onAddItem(LittleItem newItem) {
+        // update sql
+        mDatabase.addItem(newItem);
+        // update recyclerView adapter.
+        mRecyclerViewAdapter.adapterListAddItem(newItem);
+    }
+
+    @Override
+    public void onItemRemove(int inAdapterPosi) {
+        long itemId = mRecyclerViewAdapter.getItemsArrayList().get(inAdapterPosi).getItemId();
+        // update sql
+        mDatabase.removeItemById(itemId);
+        // update recyclerView adapter.
+        mRecyclerViewAdapter.adapterListRemoveItem(inAdapterPosi);
     }
 }

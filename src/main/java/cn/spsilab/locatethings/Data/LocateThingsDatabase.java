@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import cn.spsilab.locatethings.Data.LocateThingsDbContract.ItemEntity;
  */
 
 public class LocateThingsDatabase {
+    private final String TAG = LocateThingsDatabase.class.toString();
 
     private SQLiteDatabase mDb;
 
@@ -127,13 +129,13 @@ public class LocateThingsDatabase {
 
     /**
      * Qerying database with specify itemId.
-     * @param id
+     * @param itemId
      * @return
      */
-    public LittleItem getItemById(long id) {
+    public LittleItem getItemById(long itemId) {
 
         String selection = ItemEntity._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(id) };
+        String[] selectionArgs = { String.valueOf(itemId) };
 
         // start a query.
         Cursor cursor = mDb.query(ItemEntity.TABLE_NAME,
@@ -154,14 +156,14 @@ public class LocateThingsDatabase {
 
     /**
      * Updating a item, method will auto set current time to the modifyTime timestamp.
-     * @param id
-     * @param to
+     * @param itemId
+     * @param newItem
      * @return
      */
-    public int updateItemById(long id, LittleItem to) {
-        LittleItem modifyItem = getItemById(id);
-        modifyItem.setItemId(to.getItemId());
-        modifyItem.setItemName(to.getItemName());
+    public int updateItemById(long itemId, LittleItem newItem) {
+        LittleItem modifyItem = getItemById(itemId);
+        modifyItem.setItemId(newItem.getItemId());
+        modifyItem.setItemName(newItem.getItemName());
 
         ContentValues cv = new ContentValues();
 
@@ -169,26 +171,35 @@ public class LocateThingsDatabase {
         Date nowDate = new Date();
         Timestamp nowTimeStamp = new Timestamp(nowDate.getTime());
 
-        cv.put(ItemEntity.COLUMN_ITEM_NAME, to.getItemName());
-        cv.put(ItemEntity.COLUMN_OWN_BY_USER, to.getUserId());
-        cv.put(ItemEntity.COLUMN_BIND_MODULE, to.getModuleId());
+        // ensure data not null.
+        if (newItem.getItemName() != null && !newItem.getItemName().equals("")) {
+            cv.put(ItemEntity.COLUMN_ITEM_NAME, newItem.getItemName());
+            Log.d(TAG, "updateItemById: updating name.");
+        }
+        if (newItem.getUserId() != -1) {
+            cv.put(ItemEntity.COLUMN_OWN_BY_USER, newItem.getUserId());
+        }
+        if (newItem.getModuleId() != -1) {
+            cv.put(ItemEntity.COLUMN_BIND_MODULE, newItem.getModuleId());
+        }
+
         cv.put(ItemEntity.COLUMN_MODIFY_TIMESTAMP, nowTimeStamp.toString());
 
         String selection = ItemEntity._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(id) };
+        String[] selectionArgs = { String.valueOf(itemId) };
 
         return mDb.update(ItemEntity.TABLE_NAME, cv, selection, selectionArgs);
     }
 
     /**
      * Removing the specify item by itemId.
-     * @param id
+     * @param itemId
      * @return
      */
-    public int removeItemById(long id) {
+    public int removeItemById(long itemId) {
 
         String selection = ItemEntity._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(id) };
+        String[] selectionArgs = { String.valueOf(itemId) };
 
         return mDb.delete(ItemEntity.TABLE_NAME, selection, selectionArgs);
     }

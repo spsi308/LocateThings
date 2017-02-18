@@ -1,12 +1,13 @@
 package cn.spsilab.locatethings.Data;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Created by changrq on 17-2-17.
  */
 
-public class LittleItem {
+public class LittleItem implements Serializable {
     private long itemId;
     private String itemName;
     private long userId;
@@ -14,6 +15,9 @@ public class LittleItem {
     private Timestamp createTime;
     private Timestamp modifyTime;
 
+    public LittleItem() {
+
+    }
 
     public void setItemId(long itemId) {
         this.itemId = itemId;
