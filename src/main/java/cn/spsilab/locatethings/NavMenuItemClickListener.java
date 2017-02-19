@@ -31,7 +31,8 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
             case R.id.menu_user_login: {
                 Intent intent = new Intent(mainActivity,LoginActivity.class);
                 mainActivity.startActivity(intent);
-//                mainActivity.toolbar.findViewById(R.id.btn_add).setVisibility(View.INVISIBLE);
+
+
             }
             break;
             case R.id.menu_user_info: {

@@ -33,4 +33,30 @@
     <string name="str_update_password_btn">确定</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+
+    <!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+    <!--all network status and some key, value-->
+
+    <!--shard preference file key-->
+    <string name="PREFERENCE_FILE_KEY">LOCATETHINGS_PREFERENCE_FILE_KEY</string>
+    <!--login status key&values-->
+    <string name="LOGIN_STATUS">LOGIN_STATUS</string>
+    <integer name="LOGIN">0x01</integer>
+    <integer name="LOGOUT">0x02</integer>
+    <!--will be save in local storage-->
+    <string name="USER_NAME">USER_NAME</string>
+    <string name="PASSWORD">PASSWORD</string>
+    <string name="PHONE">PHONE</string>
+    <string name="EMAIL">EMAIL</string>
+    <string name="PHOTO">PHOTO</string>
+    <!--token will be save in Application and shared preference-->
+    <string name="TOKEN">TOKEN</string>
+    <!--server response code-->
+    <integer name="LOGIN_SUCCESS">210</integer>
+    <integer name="LOGIN_FAILED">211</integer>
+    <!--local error code-->
+    <integer name="NO_CONNECTION">404</integer>
+
 </resources>

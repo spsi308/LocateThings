@@ -15,9 +15,7 @@ import cn.spsilab.locatethings.R;
  */
 public class FindPasswordFragment extends Fragment {
 
-
     public FindPasswordFragment() {
-
     }
 
 

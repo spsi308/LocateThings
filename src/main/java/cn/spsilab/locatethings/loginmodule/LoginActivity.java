@@ -8,11 +8,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import cn.spsilab.locatethings.NetworkService;
 import cn.spsilab.locatethings.R;
+import cn.spsilab.locatethings.module.ResponseResult;
 
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, NetworkService.NetworkCallback{
 
     private Button clearNameBtn,
             clearPasswordBtn,
@@ -68,16 +71,47 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.btn_forget_password :
                 //
-
-
+                FindPasswordFragment findPasswordFragment = new FindPasswordFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .add(findPasswordFragment, null)
+                        .addToBackStack("find")
+                        .commit();
+                break;
+            default:onBackPressed();
         }
 
     }
 
     private void login() {
+        String name = nameTextView.getText().toString();
+        String password = passwdTextView.getText().toString();
 
+        NetworkService.getInstance().login(name, password, this);
     }
 
     private void regist(){}
+
+    @Override
+    public void onSuccess(ResponseResult result) {
+        int status = result.getStatus();
+        if (status == idToInt(R.integer.LOGIN_SUCCESS)) {
+            Toast.makeText(this, "login success", Toast.LENGTH_SHORT).show();
+            onBackPressed();
+        }
+    }
+
+    @Override
+    public void onFailure(ResponseResult result, Throwable t) {
+        int status = result.getStatus();
+        if (status == idToInt(R.integer.LOGIN_FAILED)) {
+            Toast.makeText(this, "login failed", Toast.LENGTH_SHORT).show();
+        } else if (status == idToInt(R.integer.NO_CONNECTION)) {
+            Toast.makeText(this, "no netword", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int idToInt(int id) {
+        return getResources().getInteger(id);
+    }
 
 }
