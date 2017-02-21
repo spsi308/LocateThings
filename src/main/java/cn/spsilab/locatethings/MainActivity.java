@@ -1,6 +1,7 @@
 package cn.spsilab.locatethings;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,9 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,13 +25,15 @@ import java.util.ArrayList;
 import cn.spsilab.locatethings.Data.LittleItem;
 import cn.spsilab.locatethings.Data.LocateThingsDatabase;
 import cn.spsilab.locatethings.Data.TestData;
+import cn.spsilab.locatethings.module.ResponseResult;
 
 public class MainActivity extends AppCompatActivity implements
-        ItemListRecyclerAdapter.ItemAdapterOnClickHandler, ItemOperateHandler{
+        ItemListRecyclerAdapter.ItemAdapterOnClickHandler, ItemOperateHandler, NetworkService.NetworkCallback {
+    private final String TAG = "Main Activity";
 
     private DrawerLayout drawerLayout;
 
-    public Toolbar toolbar;
+    private Toolbar toolbar;
 
     private NavigationView navigationView;
     private RecyclerView mRecycerView;
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.on_drawer_open,R.string.on_drawer_close);
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
 //        findViewById(R.id.btn_find).setOnClickListener(new View.OnClickListener() {
@@ -84,6 +91,13 @@ public class MainActivity extends AppCompatActivity implements
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(new NavMenuItemClickListener(this, drawerLayout));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // when open the app auto login
+//        NetworkService.getInstance().autoLogin(this);
     }
 
     /**
@@ -161,5 +175,62 @@ public class MainActivity extends AppCompatActivity implements
         mDatabase.removeItemById(itemId);
         // update recyclerView adapter.
         mRecyclerViewAdapter.adapterListRemoveItem(inAdapterPosi);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == getResources().getInteger(R.integer.LOGIN_STATUS)) {
+            if (resultCode == getResources().getInteger(R.integer.LOGIN_SUCCESS)) {
+                loginSucess();
+                return;
+            }
+            if (requestCode == getResources().getInteger(R.integer.LOGIN_FAILED)) {
+                Log.d(TAG, data.getStringExtra("msg"));
+            }
+        }
+    }
+
+    @Override
+    public void onSuccess(ResponseResult result) {
+        if (result.getStatus() == getResources().getInteger(R.integer.LOGIN_SUCCESS)) {
+            loginSucess();
+        }
+
+    }
+
+    @Override
+    public void onFailure(ResponseResult result, Throwable t) {
+
+    }
+
+    private void loginSucess() {
+        //remove login btn
+        navigationView.getMenu().getItem(0).setVisible(false);
+        navigationView.getMenu().getItem(1).setVisible(true);
+        navigationView.getMenu().getItem(3).setVisible(true);
+        View view = navigationView.getHeaderView(0);
+        //if login ,change the header img and username
+        ImageView userHeaderImg = (ImageView) view.findViewById(R.id.img_user_header);
+        TextView userNameText = (TextView) view.findViewById(R.id.str_user_name);
+        StatusApplication statusApplication = (StatusApplication) getApplicationContext();
+
+        if (statusApplication.getUser() != null) {
+            userNameText.setText(statusApplication.getUser().getName());
+        }
+        NetworkService.getInstance().getPicture("http://7xo1fz.com1.z0.glb.clouddn.com/2ae361d1c28794a5bb151a02baec8038.jpg", userHeaderImg, R.drawable.user);
+    }
+
+    public void logout() {
+        //remove logout btn
+        navigationView.getMenu().getItem(3).setVisible(false);
+        navigationView.getMenu().getItem(1).setVisible(false);
+        navigationView.getMenu().getItem(0).setVisible(true);
+        View view = navigationView.getHeaderView(1);
+        //if login ,change the header img and username
+        ImageView userHeaderImg = (ImageView) navigationView.findViewById(R.id.img_user_header);
+        TextView userNameText = (TextView) navigationView.findViewById(R.id.str_user_name);
+        userHeaderImg.setImageResource(R.drawable.user);
+        userNameText.setText("登录");
     }
 }

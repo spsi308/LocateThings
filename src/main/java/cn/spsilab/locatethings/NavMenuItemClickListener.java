@@ -19,6 +19,7 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
     private MainActivity mainActivity;
     private DrawerLayout drawerLayout;
 
+
     public NavMenuItemClickListener(MainActivity mainActivity, DrawerLayout drawerLayout) {
         this.mainActivity = mainActivity;
         this.drawerLayout = drawerLayout;
@@ -29,10 +30,8 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
         Bundle bundle = new Bundle();
         switch (item.getItemId()) {
             case R.id.menu_user_login: {
-                Intent intent = new Intent(mainActivity,LoginActivity.class);
-                mainActivity.startActivity(intent);
-
-
+                Intent intent = new Intent(mainActivity, LoginActivity.class);
+                mainActivity.startActivityForResult(intent, mainActivity.getResources().getInteger(R.integer.LOGIN_STATUS));
             }
             break;
             case R.id.menu_user_info: {
@@ -49,6 +48,10 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
                 showFragment.setArguments(bundle);
                 mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, showFragment, null).addToBackStack(String.valueOf(item.getItemId())).commit();
 
+            }
+            case R.id.menu_user_logout: {
+                NetworkService.getInstance().logout(mainActivity);
+                mainActivity.logout();
             }
             break;
             default:
