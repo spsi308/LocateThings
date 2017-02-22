@@ -6,7 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
 
 import cn.spsilab.locatethings.loginmodule.LoginActivity;
 
@@ -18,11 +20,13 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
 
     private MainActivity mainActivity;
     private DrawerLayout drawerLayout;
+    private RecyclerView recyclerView;
 
 
-    public NavMenuItemClickListener(MainActivity mainActivity, DrawerLayout drawerLayout) {
+    public NavMenuItemClickListener(MainActivity mainActivity, DrawerLayout drawerLayout, RecyclerView recyclerView) {
         this.mainActivity = mainActivity;
         this.drawerLayout = drawerLayout;
+        this.recyclerView = recyclerView;
     }
 
     @Override
@@ -35,10 +39,14 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
             }
             break;
             case R.id.menu_user_info: {
-                bundle.putString("show_text", item.getTitle().toString());
-                Fragment showFragment = new ShowFragment();
-                showFragment.setArguments(bundle);
-                mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, showFragment, null).addToBackStack(String.valueOf(item.getItemId())).commit();
+                Fragment infoFragment = new UserInfoFragment();
+                recyclerView.setVisibility(View.INVISIBLE);
+
+                mainActivity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_content, infoFragment, null)
+                        .addToBackStack(String.valueOf(item.getItemId()))
+                        .commit();
 
             }
             break;
@@ -46,8 +54,11 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
                 bundle.putString("show_text", item.getTitle().toString());
                 Fragment showFragment = new ShowFragment();
                 showFragment.setArguments(bundle);
-                mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, showFragment, null).addToBackStack(String.valueOf(item.getItemId())).commit();
-
+                mainActivity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_content, showFragment, null)
+                        .addToBackStack(String.valueOf(item.getItemId()))
+                        .commit();
             }
             case R.id.menu_user_logout: {
                 NetworkService.getInstance().logout(mainActivity);
@@ -62,4 +73,6 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawers();
         return true;
     }
+
+
 }

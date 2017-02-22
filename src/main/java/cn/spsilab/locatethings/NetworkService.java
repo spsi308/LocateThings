@@ -4,10 +4,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.google.gson.internal.LinkedTreeMap;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import cn.spsilab.locatethings.module.ResponseResult;
@@ -132,7 +145,6 @@ public class NetworkService {
             throw new RuntimeException("context must implements LoginUtil.LoginCallback interface");
         }
         final NetworkCallback loginCallback = (NetworkCallback) context;
-        // TODO: 2/19/2017
         Call<ResponseResult<Map<String, Object>>> call = apiService.login(userName, password);
         call.enqueue(new Callback<ResponseResult<Map<String, Object>>>() {
             @Override
@@ -163,23 +175,6 @@ public class NetworkService {
 
     }
 
-    private void save(ResponseResult<Map<String, Object>> result, String password, Context context) {
-        String token = (String) result.getData().get("token");
-//        long id = Long.parseLong((double)(result.getData().get("id")));
-        long id = (long) (double) (result.getData().get("id"));
-        String name = (String) result.getData().get("name");
-        String photo = (String) result.getData().get("photo");
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setToken(token);
-        user.setPhoto(photo);
-        saveInSharedPeference(id, name, password, token, context);
-        StatusApplication statusApplication = (StatusApplication) context.getApplicationContext();
-        statusApplication.setLoginStatus(idTOInt(context, R.integer.LOGIN));
-        statusApplication.setToken(token);
-        statusApplication.setUser(user);
-    }
 
     /**
      * 退出登录
@@ -238,17 +233,100 @@ public class NetworkService {
     }
 
 
+
+    /**
+     * convert json object to bean
+     * <h2>the double value will be cast to long</h2>
+     * <hr>
+     * @param classType convert object type
+     * @param jsonObject json object
+     * @param <T> return object type
+     * @return the converted object
+     *
+     */
+    private <T> T convertToUser(Class<T> classType, LinkedTreeMap jsonObject) {
+        Field[] fields = classType.getDeclaredFields();
+        T res = null;
+        try {
+            res = classType.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+        for (Field f : fields) {
+            if (Modifier.isPrivate(f.getModifiers())) {
+                String param = f.getName();
+                Object args = jsonObject.get(param);
+                if (args != null) {
+                    try {
+                        char[] chars = param.toCharArray();
+                        chars[0] = (char) (chars[0] - 32);
+                        Method m = classType.getMethod("set" + new String(chars), f.getType());
+
+                        if (Modifier.isPrivate(m.getModifiers())) {
+                            m.setAccessible(true);
+                        }
+                        // Gson will convert long to double
+                        if (Double.class.equals(args.getClass())) {
+                            args = ((Number) args).longValue();
+                        }
+                        m.invoke(res, args);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    /**********************************************************************/
+
+    private void save(ResponseResult<Map<String, Object>> result, String password, Context context) {
+
+        LinkedTreeMap data = (LinkedTreeMap) result.getData();
+        User u = convertToUser(User.class, data);
+        if (u == null) {
+            return;
+        }
+        Log.d(TAG, u.toString());
+/*        String token = (String) result.getData().get("token");
+//        long id = Long.parseLong((double)(result.getData().get("id")));
+        long id = (long) (double) (result.getData().get("id"));
+        String name = (String) result.getData().get("name");
+        String photo = (String) result.getData().get("photo");
+        User user = new User();
+        user.setId(id);
+        user.setName(name);
+        user.setToken(token);
+        user.setPhoto(photo);*/
+        saveInSharedPeference(u, password, context);
+        StatusApplication statusApplication = (StatusApplication) context.getApplicationContext();
+        statusApplication.setLoginStatus(idTOInt(context, R.integer.LOGIN));
+        statusApplication.setToken(u.getToken());
+        statusApplication.setUser(u);
+    }
+
+
     /**
      * 将状态存入sharedpeference
      */
-    private void saveInSharedPeference(long userId, String userName, String password, String token, Context context) {
+    private void saveInSharedPeference(User user, String password, Context context) {
         //全局共享
         SharedPreferences sh = context.getSharedPreferences(idToString(context, R.string.PREFERENCE_FILE_KEY),Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = sh.edit();
-        edit.putLong(idToString(context, R.string.USER_ID), userId);
-        edit.putString(idToString(context, R.string.USER_NAME), userName);
+        edit.putLong(idToString(context, R.string.USER_ID), user.getId());
+        edit.putString(idToString(context, R.string.USER_NAME), user.getName());
         edit.putString(idToString(context, R.string.PASSWORD), password);
-        edit.putString(idToString(context, R.string.TOKEN), token);
+        edit.putString(idToString(context, R.string.TOKEN), user.getToken());
         edit.commit();
     }
 
@@ -270,27 +348,71 @@ public class NetworkService {
      * if your url is /images/12.jpg, the request url will be baseurl + url
      * if url is http://ab.xyz/23.jpg the request url is url
      */
-    public void getPicture(String url, final ImageView show, final int defaultImgId) {
-        getService(APIService.class);
-        Call<ResponseBody> resp = apiService.getPicture(url);
-        resp.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                InputStream is = response.body().byteStream();
-                Bitmap img = BitmapFactory.decodeStream(is);
-                if (img == null) {
-                    show.setImageResource(defaultImgId);
-                } else {
-                    show.setImageBitmap(img);
+    public void getPicture(final String url, final ImageView show, final int defaultImgId) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        String[] us = url.split("/");
+        String name = us[us.length - 1];
+        String path = Environment.getExternalStorageDirectory() + "/image/" + name;
+        Log.d(TAG, "save path:" + path);
+        final File file = new File(path);
+
+        if (!file.exists()) {
+            getService(APIService.class);
+            Call<ResponseBody> resp = apiService.getPicture(url);
+            resp.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        if (file.createNewFile()) {
+                            InputStream is = response.body().byteStream();
+                            // save
+                            BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
+                            try {
+                                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+                                byte[] bytes = new byte[1024];
+                                int l = 0;
+                                while ((l = bufferedInputStream.read(bytes)) != -1) {
+                                    bufferedOutputStream.write(bytes, 0, l);
+                                }
+                                bufferedOutputStream.flush();
+                                bufferedOutputStream.close();
+                                bufferedInputStream.close();
+                            } catch (java.io.IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            Bitmap img = BitmapFactory.decodeFile(file.getAbsolutePath());
+                            if (img == null) {
+                                show.setImageResource(defaultImgId);
+                            } else {
+                                show.setImageBitmap(img);
+                            }
+                        }
+                    } catch (IOException e) {
+                        show.setImageResource(defaultImgId);
+                        e.printStackTrace();
+                    }
+
                 }
 
-            }
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    show.setImageResource(defaultImgId);
+                }
+            });
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+        } else {
+            Bitmap img = BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (img == null) {
                 show.setImageResource(defaultImgId);
+            } else {
+                show.setImageBitmap(img);
             }
-        });
+        }
+
+
     }
 
 

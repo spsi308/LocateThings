@@ -9,6 +9,7 @@
     <string name="str_menu_app_about">About</string>
     <string name="str_menu_logout">Logout</string>
     <!--Login Activity-->
+    <string name="str_id">ID</string>
     <string name="str_login_header">Login</string>
     <string name="str_login_user_name">UserName</string>
     <string name="str_login_user_password">Password</string>
@@ -33,7 +34,6 @@
     <string name="str_update_password_repeat">请重新输入新密码</string>
     <string name="str_update_password_btn">确定</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
 
     <!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
@@ -61,6 +61,8 @@
     <integer name="LOGIN_FAILED">211</integer>
     <integer name="REGIST_SUCCESS">212</integer>
     <integer name="REGIST_FAILED">213</integer>
+    <integer name="UPDATE_SUCCESS">220</integer>
+    <integer name="UPDATE_FAILED">221</integer>
     <!--local error code-->
     <integer name="NO_CONNECTION">404</integer>
 

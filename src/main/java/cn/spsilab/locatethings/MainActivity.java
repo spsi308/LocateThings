@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements
 //        });
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavMenuItemClickListener(this, drawerLayout));
+        navigationView.setNavigationItemSelectedListener(new NavMenuItemClickListener(this, drawerLayout, mRecycerView));
     }
 
     @Override
@@ -105,10 +105,15 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onBackPressed() {
+
         if(drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
+
+        if (mRecycerView.getVisibility() == View.INVISIBLE) {
+            mRecycerView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -217,8 +222,9 @@ public class MainActivity extends AppCompatActivity implements
 
         if (statusApplication.getUser() != null) {
             userNameText.setText(statusApplication.getUser().getName());
+            NetworkService.getInstance().getPicture(statusApplication.getUser().getPhoto(), userHeaderImg, R.drawable.user);
         }
-        NetworkService.getInstance().getPicture("http://7xo1fz.com1.z0.glb.clouddn.com/2ae361d1c28794a5bb151a02baec8038.jpg", userHeaderImg, R.drawable.user);
+
     }
 
     public void logout() {

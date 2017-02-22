@@ -44,6 +44,13 @@
                     android:layout_gravity="end|center_vertical"
                     android:background="@drawable/clear"
                     />
+
+                <TextView
+                    android:id="@+id/text_login_user_name_warning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:textColor="#ff0000"/>
             </FrameLayout>
 
             <FrameLayout
@@ -72,6 +79,13 @@
                     android:layout_gravity="end|center_vertical"
                     android:background="@drawable/clear"
                     />
+
+                <TextView
+                    android:id="@+id/text_login_password_warning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:textColor="#ff0000"/>
             </FrameLayout>
 
         </LinearLayout>
