@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<group android:checkableBehavior="single">
     <item android:id="@+id/menu_user_login"
-        android:title="@string/str_login_header"
-        android:icon="@drawable/login"
+          android:icon="@drawable/login"
+          android:title="@string/str_login_header"
         />
     <item android:id="@+id/menu_user_info"
-        android:icon="@drawable/info"
-        android:title="@string/str_menu_user_info"
+          android:icon="@drawable/info"
+          android:title="@string/str_menu_user_info"
+          android:visible="false"
         />
-</group>
-    <group android:checkableBehavior="single">
-        <item android:id="@+id/menu_app_about"
-            android:icon="@drawable/about"
-            android:title="@string/str_menu_app_about"/>
-    </group>
+    <item
+        android:id="@+id/menu_app_about"
+        android:icon="@drawable/about"
+        android:title="@string/str_menu_app_about"/>
+    <item
+        android:id="@+id/menu_user_logout"
+        android:icon="@drawable/exit"
+        android:title="@string/str_menu_logout"
+        android:visible="false"/>
 </menu>

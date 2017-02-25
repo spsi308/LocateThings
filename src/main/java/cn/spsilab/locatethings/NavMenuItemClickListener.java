@@ -6,7 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import cn.spsilab.locatethings.loginmodule.LoginActivity;
 
@@ -18,10 +22,16 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
 
     private MainActivity mainActivity;
     private DrawerLayout drawerLayout;
+    private RecyclerView recyclerView;
+    private Toolbar toolbar;
+    private Button addBtn;
 
-    public NavMenuItemClickListener(MainActivity mainActivity, DrawerLayout drawerLayout) {
+
+    public NavMenuItemClickListener(MainActivity mainActivity, DrawerLayout drawerLayout, RecyclerView recyclerView, Toolbar toolbar) {
         this.mainActivity = mainActivity;
         this.drawerLayout = drawerLayout;
+        this.recyclerView = recyclerView;
+        this.toolbar = toolbar;
     }
 
     @Override
@@ -29,16 +39,21 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
         Bundle bundle = new Bundle();
         switch (item.getItemId()) {
             case R.id.menu_user_login: {
-                Intent intent = new Intent(mainActivity,LoginActivity.class);
-                mainActivity.startActivity(intent);
-//                mainActivity.toolbar.findViewById(R.id.btn_add).setVisibility(View.INVISIBLE);
+                toolbar.setTitle("login");
+                Intent intent = new Intent(mainActivity, LoginActivity.class);
+                mainActivity.startActivityForResult(intent, mainActivity.getResources().getInteger(R.integer.LOGIN_STATUS));
             }
             break;
             case R.id.menu_user_info: {
-                bundle.putString("show_text", item.getTitle().toString());
-                Fragment showFragment = new ShowFragment();
-                showFragment.setArguments(bundle);
-                mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, showFragment, null).addToBackStack(String.valueOf(item.getItemId())).commit();
+                toolbar.setTitle("user info");
+                Fragment infoFragment = new UserInfoFragment();
+                recyclerView.setVisibility(View.INVISIBLE);
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mainActivity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_content, infoFragment, null)
+                        .addToBackStack(String.valueOf(item.getItemId()))
+                        .commit();
 
             }
             break;
@@ -46,8 +61,15 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
                 bundle.putString("show_text", item.getTitle().toString());
                 Fragment showFragment = new ShowFragment();
                 showFragment.setArguments(bundle);
-                mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, showFragment, null).addToBackStack(String.valueOf(item.getItemId())).commit();
-
+                mainActivity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_content, showFragment, null)
+                        .addToBackStack(String.valueOf(item.getItemId()))
+                        .commit();
+            }
+            case R.id.menu_user_logout: {
+                NetworkService.getInstance().logout(mainActivity);
+                mainActivity.logout();
             }
             break;
             default:
@@ -58,4 +80,6 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawers();
         return true;
     }
+
+
 }

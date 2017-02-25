@@ -7,7 +7,9 @@
     <!--menu-->
     <string name="str_menu_user_info">My Info</string>
     <string name="str_menu_app_about">About</string>
+    <string name="str_menu_logout">Logout</string>
     <!--Login Activity-->
+    <string name="str_id">ID</string>
     <string name="str_login_header">Login</string>
     <string name="str_login_user_name">UserName</string>
     <string name="str_login_user_password">Password</string>
@@ -32,5 +34,48 @@
     <string name="str_update_password_repeat">请重新输入新密码</string>
     <string name="str_update_password_btn">确定</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+    <!--all network status and some key, value-->
+
+    <!--shard preference file key-->
+    <string name="PREFERENCE_FILE_KEY">LOCATETHINGS_PREFERENCE_FILE_KEY</string>
+    <!--login status key&values-->
+    <string name="LOGIN_STATUS">LOGIN_STATUS</string>
+    <integer name="LOGIN_STATUS">0x00</integer>
+    <integer name="LOGIN">0x01</integer>
+    <integer name="LOGOUT">0x02</integer>
+    <integer name="SELECT_IMG">0x03</integer>
+    <integer name="TYPE_USER">0x10</integer>
+    <integer name="TYPE_ITEM">0x11</integer>
+    <integer name="TYPE_TAG">0x12</integer>
+    <!--will be save in local storage-->
+    <string name="USER_ID">USER_ID</string>
+    <string name="USER_NAME">USER_NAME</string>
+    <string name="PASSWORD">PASSWORD</string>
+    <string name="PHONE">PHONE</string>
+    <string name="EMAIL">EMAIL</string>
+    <string name="PHOTO">PHOTO</string>
+    <!--token will be save in Application and shared preference-->
+    <string name="TOKEN">TOKEN</string>
+    <!--server response code-->
+    <integer name="BAD_REQUEST">405</integer>
+    <integer name="LOGIN_SUCCESS">210</integer>
+    <integer name="LOGIN_FAILED">211</integer>
+    <integer name="REGIST_SUCCESS">212</integer>
+    <integer name="REGIST_FAILED">213</integer>
+    <integer name="UPDATE_SUCCESS">220</integer>
+    <integer name="UPDATE_FAILED">221</integer>
+    <integer name="ADD_SUCCESS">222</integer>
+    <integer name="ADD_FAILED">223</integer>
+    <integer name="GET_SUCCESS">224</integer>
+    <integer name="GET_FILED">225</integer>
+    <integer name="DELETE_SUCCESS">226</integer>
+    <integer name="DELETE_FAILED">227</integer>
+    <!--local error code-->
+    <integer name="NO_CONNECTION">404</integer>
+
 
 </resources>

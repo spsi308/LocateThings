@@ -1,48 +1,57 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="cn.spsilab.locatethings.loginmodule.RegistFragment">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                tools:context="cn.spsilab.locatethings.loginmodule.RegistFragment">
+
 
     <RelativeLayout
         android:id="@+id/layout_regist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:gravity="center" >
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:padding="20dp">
 
         <LinearLayout
             android:id="@+id/layout_user_regist"
-            android:layout_marginTop="60dp"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:orientation="vertical">
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/edit_regist_user_name"
-                    android:paddingLeft="60dp"
-                    android:paddingRight="40dp"
                     android:layout_width="match_parent"
+                    android:layout_height="60dp"
                     android:hint="@string/str_login_user_name"
-                    android:layout_height="60dp" />
+                    android:paddingLeft="60dp"
+                    android:paddingRight="40dp"/>
                 <ImageView
                     android:layout_width="52dp"
                     android:layout_height="52dp"
-                    android:padding="8dp"
                     android:layout_gravity="start|center_vertical"
+                    android:padding="8dp"
                     android:src="@drawable/login"
                     />
                 <Button
                     android:id="@+id/btn_regist_clear_user_name"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/clear"
                     android:layout_gravity="end|center_vertical"
+                    android:background="@drawable/clear"
                     />
+
+                <TextView
+                    android:id="@+id/text_regist_user_name_warring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"/>
             </FrameLayout>
 
             <FrameLayout
@@ -50,26 +59,32 @@
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/edit_regist_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="@string/str_regist_phone"
                     android:inputType="phone"
                     android:paddingLeft="60dp"
-                    android:paddingRight="40dp"
-                    android:hint="@string/str_regist_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp" />
+                    android:paddingRight="40dp"/>
                 <ImageView
                     android:layout_width="52dp"
                     android:layout_height="52dp"
-                    android:padding="8dp"
                     android:layout_gravity="start|center_vertical"
+                    android:padding="8dp"
                     android:src="@drawable/phone"
                     />
                 <Button
-                    android:id="@+id/btn_clear_user_password"
+                    android:id="@+id/btn_regist_clear_user_phone"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/clear"
                     android:layout_gravity="end|center_vertical"
+                    android:background="@drawable/clear"
                     />
+
+                <TextView
+                    android:id="@+id/text_regist_phone_warring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"/>
             </FrameLayout>
 
             <FrameLayout
@@ -77,26 +92,68 @@
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/edit_regist_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="@string/str_regist_user_password"
                     android:inputType="textPassword"
                     android:paddingLeft="60dp"
-                    android:paddingRight="40dp"
-                    android:hint="@string/str_regist_user_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp" />
+                    android:paddingRight="40dp"/>
                 <ImageView
                     android:layout_width="52dp"
                     android:layout_height="52dp"
-                    android:padding="8dp"
                     android:layout_gravity="start|center_vertical"
+                    android:padding="8dp"
                     android:src="@drawable/password"
                     />
                 <Button
-                    android:id="@+id/btn_clear_user_email"
+                    android:id="@+id/btn_regist_clear_user_password"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/clear"
                     android:layout_gravity="end|center_vertical"
+                    android:background="@drawable/clear"
                     />
+
+                <TextView
+                    android:id="@+id/text_regist_password_warring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_regist_password_repeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="@string/str_regist_user_password"
+                    android:inputType="textPassword"
+                    android:paddingLeft="60dp"
+                    android:paddingRight="40dp"/>
+
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:padding="8dp"
+                    android:src="@drawable/password"
+                    />
+
+                <Button
+                    android:id="@+id/btn_regist_clear_user_password_repeat"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:background="@drawable/clear"
+                    />
+
+                <TextView
+                    android:id="@+id/text_regist_password_repeat_warring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"/>
             </FrameLayout>
 
 
@@ -108,10 +165,18 @@
             android:layout_below="@id/layout_user_regist"
             android:layout_marginTop="30dp"
             android:background="#ff336699"
-            android:textColor="@android:color/white"
-
             android:gravity="center"
-            android:text="@string/str_regist_btn" />
+
+            android:text="@string/str_regist_btn"
+            android:textColor="@android:color/white"/>
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/gifImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_user_regist"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/loader"/>
     </RelativeLayout>
 
-</FrameLayout>
+</RelativeLayout>
