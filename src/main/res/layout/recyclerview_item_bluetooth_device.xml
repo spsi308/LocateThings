@@ -10,16 +10,17 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_bluetooth_device"
+            android:id="@+id/text_bluetooth_device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:padding="15dp"/>
+            android:textSize="15sp"
+            android:padding="8dp"/>
 
         <Button
-            android:id="@+id/bt_bluetooth_select"
-            android:text="配对"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_bluetooth_select_deviece"
+            android:text="选择"
+            android:textSize="13sp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             />

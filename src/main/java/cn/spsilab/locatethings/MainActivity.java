@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,9 +21,11 @@ import java.util.ArrayList;
 import cn.spsilab.locatethings.Data.LittleItem;
 import cn.spsilab.locatethings.Data.LocateThingsDatabase;
 import cn.spsilab.locatethings.Data.TestData;
+import cn.spsilab.locatethings.bluetooth.SelectStationDialog;
 
 public class MainActivity extends AppCompatActivity implements
         ItemListRecyclerAdapter.ItemAdapterOnClickHandler, ItemOperateHandler{
+    private final static String TAG = MainActivity.class.toString();
 
     private DrawerLayout drawerLayout;
 
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         // Bind view component.
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -60,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements
         mDatabase.insertTestData();
 
         // set adapter data.
-        ArrayList<LittleItem> itemsArray =mDatabase.getItemsByUserId(TestData.fakeUserId);
+        ArrayList<LittleItem> itemsArray = mDatabase.getItemsByUserId(TestData.fakeUserId);
+        Log.d(TAG, "onCreate: "+ itemsArray.get(0).getBindTagModule().getModuleMAC());
         mRecyclerViewAdapter.setItemsArrayList(itemsArray);
 
         // enable RecyclerView.
@@ -91,10 +97,15 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+        Log.d(TAG, "onBackPressed: clicked");
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        else
+        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
+            Log.d(TAG, "onBackPressed: popbackstack!");
+            getFragmentManager().popBackStack();
+        } else {
             super.onBackPressed();
+        }
     }
 
     @Override
@@ -116,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.btn_setting :
                 Toast.makeText(this,"setting",Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.btn_blue_test:
+                new SelectStationDialog().show(getFragmentManager(), "bluetoothDialog");
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -149,7 +162,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAddItem(LittleItem newItem) {
         // update sql
-        mDatabase.addItem(newItem);
+        long itemId = mDatabase.addItem(newItem);
+
+        // set item id.
+        newItem.setItemId(itemId);
+
         // update recyclerView adapter.
         mRecyclerViewAdapter.adapterListAddItem(newItem);
     }

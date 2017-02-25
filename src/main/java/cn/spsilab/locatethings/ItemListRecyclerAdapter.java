@@ -33,7 +33,7 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
-            mItemDescTextView = (TextView) itemView.findViewById(R.id.tv_item_desc_id);
+            mItemDescTextView = (TextView) itemView.findViewById(R.id.text_item_desc_id);
             itemView.setOnClickListener(this);
         }
 
@@ -109,8 +109,8 @@ public class ItemListRecyclerAdapter extends RecyclerView.Adapter<ItemListRecycl
             afterChanged.setItemName(item.getItemName());
         }
 
-        if (item.getModuleId() != -1) {
-            afterChanged.setModuleId(item.getModuleId());
+        if (item.getBindTagModule() != null) {
+            afterChanged.setBindTagModule(item.getBindTagModule());
         }
 
         notifyItemChanged(posi);

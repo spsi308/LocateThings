@@ -17,4 +17,10 @@ public class LocateThingsDbContract {
         public final static String COLUMN_CREATE_TIMESTAMP = "itemCreateTime";
         public final static String COLUMN_MODIFY_TIMESTAMP = "itemModifyTime";
     }
+
+    public final static class TagModuleEntity implements BaseColumns {
+        public final static String TABLE_NAME = "tagModule";
+
+        public final static String COLUMN_MAC_ADDR = "tagModuleMacAddr";
+    }
 }

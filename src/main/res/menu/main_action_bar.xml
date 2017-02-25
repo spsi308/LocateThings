@@ -14,4 +14,9 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         />
+    <item
+        android:title="BLUETOOTH"
+        android:id="@+id/btn_blue_test"
+        app:showAsAction="always"
+        />
 </menu>
