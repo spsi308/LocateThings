@@ -111,8 +111,9 @@ public class NetworkService {
             throw new RuntimeException("context must implements LoginUtil.LoginCallback interface");
         }
         NetworkCallback loginCallback = (NetworkCallback) context;
-        if (!checkIsLogin(context)) {
+        if (checkIsLogin(context)) {
             loginCallback.onSuccess(ResponseResult.build(idTOInt(context, R.integer.LOGIN_SUCCESS), "Login success"));
+            return;
         }
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 idToString(context, R.string.PREFERENCE_FILE_KEY),

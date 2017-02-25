@@ -16,6 +16,12 @@ public class LocateThings extends Application {
     private String token;
     private User user;
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        loginStatus = R.integer.LOGOUT;
+    }
+
     public BluetoothService getBluetoothService() {
         return bluetoothService;
     }

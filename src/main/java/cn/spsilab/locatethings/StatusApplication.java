@@ -26,7 +26,7 @@ public class StatusApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        loginStatus = R.integer.LOGOUT;
+        loginStatus = getBaseContext().getResources().getInteger(R.integer.LOGOUT);
     }
 
     public int getLoginStatus() {
