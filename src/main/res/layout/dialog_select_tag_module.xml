@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="300dp"
+        android:layout_height="400dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_select_module_tag_module_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/text_select_module_processing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="寻找可用标签中."
+            android:layout_marginBottom="28dp"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/btn_select_module_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="重试"
+            android:layout_gravity="center"/>
+
+        <ProgressBar
+            android:id="@+id/progressbar_select_module_processing"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+</LinearLayout>

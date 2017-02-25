@@ -29,8 +29,9 @@ import cn.spsilab.locatethings.Data.TestData;
 import cn.spsilab.locatethings.module.ResponseResult;
 
 public class MainActivity extends AppCompatActivity implements
-        ItemListRecyclerAdapter.ItemAdapterOnClickHandler, ItemOperateHandler, NetworkService.NetworkCallback {
-    private final String TAG = "Main Activity";
+        ItemListRecyclerAdapter.ItemAdapterOnClickHandler,
+        ItemOperateHandler, NetworkService.NetworkCallback {
+    private final String TAG = MainActivity.class.toString();
 
     private DrawerLayout drawerLayout;
 
@@ -105,10 +106,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
 
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        else
+        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
+            Log.d(TAG, "onBackPressed: popbackstack!");
+            getFragmentManager().popBackStack();
+        } else {
             super.onBackPressed();
+        }
 
         if (mRecycerView.getVisibility() == View.INVISIBLE) {
             mRecycerView.setVisibility(View.VISIBLE);
@@ -169,7 +174,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAddItem(LittleItem newItem) {
         // update sql
-        mDatabase.addItem(newItem);
+        long itemId = mDatabase.addItem(newItem);
+
+        // set item id.
+        newItem.setItemId(itemId);
+
         // update recyclerView adapter.
         mRecyclerViewAdapter.adapterListAddItem(newItem);
     }

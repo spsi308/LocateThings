@@ -1,6 +1,7 @@
 package cn.spsilab.locatethings;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -9,18 +10,25 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import cn.spsilab.locatethings.Data.LittleItem;
+import cn.spsilab.locatethings.bluetooth.BluetoothConstants;
+import cn.spsilab.locatethings.bluetooth.BluetoothService;
+import cn.spsilab.locatethings.bluetooth.SelectStationDialog;
+import cn.spsilab.locatethings.tag.TagModule;
+import cn.spsilab.locatethings.tag.TagModuleOperateService;
+import cn.spsilab.locatethings.tag.TagProcessingDialog;
 
 /**
  * Created by changrq on 17-2-18.
  */
 
 public class ItemDetailDialog extends DialogFragment implements
-        View.OnClickListener, EditItemDialog.EditItemDoneHandler{
+        View.OnClickListener,
+        EditItemDialog.EditItemDoneHandler {
 
     private Button mDeleteItemButton;
     private Button mEditItemButton;
@@ -28,6 +36,7 @@ public class ItemDetailDialog extends DialogFragment implements
 
     private TextView mItemNameTextView;
     private TextView mItemModuleIdTextView;
+    private TextView mItemModuleMacTextView;
 
     private LittleItem specifyItem;
     private int inArrayListPosi;
@@ -66,6 +75,14 @@ public class ItemDetailDialog extends DialogFragment implements
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        return dialog;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,12 +92,15 @@ public class ItemDetailDialog extends DialogFragment implements
         mDeleteItemButton = (Button) view.findViewById(R.id.btn_item_detail_delete);
         mEditItemButton = (Button) view.findViewById(R.id.btn_item_detail_edit);
         mCallItemButton = (Button) view.findViewById(R.id.btn_item_detail_call);
+
         mItemNameTextView = (TextView) view.findViewById(R.id.text_item_detail_item_name);
         mItemModuleIdTextView = (TextView) view.findViewById(R.id.text_item_detail_module_id);
+        mItemModuleMacTextView = (TextView) view.findViewById(R.id.text_item_detail_module_mac);
 
         // set item info.
         mItemNameTextView.setText(specifyItem.getItemName());
-        mItemModuleIdTextView.setText(String.valueOf(specifyItem.getModuleId()));
+        mItemModuleMacTextView.setText(specifyItem.getBindTagModule().getModuleMAC());
+        mItemModuleIdTextView.setText(String.valueOf(specifyItem.getBindTagModule().getModuleId()));
 
         // set clickListener.
         mDeleteItemButton.setOnClickListener(this);
@@ -116,7 +136,13 @@ public class ItemDetailDialog extends DialogFragment implements
                 break;
 
             case R.id.btn_item_detail_call:
-                Toast.makeText(getActivity(), "call item", Toast.LENGTH_SHORT).show();
+                TagProcessingDialog tagProcessingDialog = new TagProcessingDialog();
+                args = new Bundle();
+                args.putString("processingText" , "呼叫标签中");
+                args.putString("targetTagMac" ,mItemModuleMacTextView.getText().toString());
+
+                tagProcessingDialog.setArguments(args);
+                tagProcessingDialog.show(getFragmentManager(), "tagProcessingDialog");
         }
     }
 
@@ -131,13 +157,16 @@ public class ItemDetailDialog extends DialogFragment implements
             mItemNameTextView.setText(item.getItemName());
             hasChanged = true;
         }
+
+        TagModule bindModule = item.getBindTagModule();
         // check if the item's module id has been updated.
-        if (specifyItem.getModuleId() == item.getModuleId()) {
-            item.setModuleId(-1);
+        if (bindModule.getModuleMAC().equals(specifyItem.getBindTagModule().getModuleMAC())) {
+            item.setBindTagModule(null);
         } else {
-            mItemModuleIdTextView.setText(String.valueOf(item.getModuleId()));
+            mItemModuleMacTextView.setText(bindModule.getModuleMAC());
             hasChanged = true;
         }
+
         // if some info has changed, then invoke to handler to apply change in database.
         if (hasChanged) {
             mItemOperateHandler.onItemChange(inArrayListPosi, item);

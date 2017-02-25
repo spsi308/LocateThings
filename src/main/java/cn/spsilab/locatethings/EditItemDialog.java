@@ -1,19 +1,16 @@
 package cn.spsilab.locatethings;
 
-import android.app.DialogFragment;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.Window;
 
 import cn.spsilab.locatethings.Data.LittleItem;
-import cn.spsilab.locatethings.Data.TestData;
+import cn.spsilab.locatethings.tag.TagModule;
 
 /**
  * Created by changrq on 17-2-18.
@@ -30,7 +27,11 @@ public class EditItemDialog extends AddItemDialog implements View.OnClickListene
     private void fillCurrentItemInfo() {
         // set current item info.
         mInputNameEditText.setText(specifyItem.getItemName());
-        mInputModuleIdEditText.setText(String.valueOf(specifyItem.getModuleId()));
+
+        TagModule bindModule = specifyItem.getBindTagModule();
+
+        mInputModuleIdEditText.setText(String.valueOf(bindModule.getModuleId()));
+        mInputModuleMacEditText.setText(bindModule.getModuleMAC());
     }
 
     @Override
@@ -46,6 +47,14 @@ public class EditItemDialog extends AddItemDialog implements View.OnClickListene
             throw new RuntimeException(jumpFrom.getClass().toString()
                     + "should implement EditDoneHandler");
         }
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        return dialog;
     }
 
     @Nullable
@@ -75,7 +84,7 @@ public class EditItemDialog extends AddItemDialog implements View.OnClickListene
                 dismiss();
                 break;
 
-            case R.id.btn_add_or_edit_select_module:
+            case R.id.btn_add_or_edit_search_module:
 
         }
 

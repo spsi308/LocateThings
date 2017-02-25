@@ -1,40 +1,48 @@
 package cn.spsilab.locatethings;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import cn.spsilab.locatethings.Data.LittleItem;
 import cn.spsilab.locatethings.Data.TestData;
+import cn.spsilab.locatethings.tag.SelectTagModuleDialog;
+import cn.spsilab.locatethings.tag.TagModule;
 
 
 /**
  * Created by changrq on 17-2-18.
  */
 
-public class AddItemDialog extends DialogFragment implements View.OnClickListener{
+public class AddItemDialog extends DialogFragment
+        implements View.OnClickListener,
+        SelectTagModuleDialog.SelectModuleDoneHandler{
+    private static final int MAC_LENGTH = 16;
     private final String TAG = AddItemDialog.class.toString();
 
     private LittleItem specifyItem;
 
     EditText mInputNameEditText;
     EditText mInputModuleIdEditText;
+    EditText mInputModuleMacEditText;
+
 
     private Button mConfirmButton;
     private Button mCancelButton;
-    private Button mSelectModuleButton;
+    private Button mSearchModuleButton;
+    private Button mSelectExistModuleButton;
 
     private TextView mErrInputNameTextView;
     private TextView mErrInputModuleIdTextView;
@@ -44,39 +52,65 @@ public class AddItemDialog extends DialogFragment implements View.OnClickListene
 
     private ItemOperateHandler mItemOperateHanler;
 
+    /**
+     * get user input from editText, if input illegal, return null,
+     * otherwise return a littleItem object.
+     * @return
+     */
     protected LittleItem getUserInput() {
         long moduleId;
         String inputName = mInputNameEditText.getText().toString();
         String moduleIdStr = mInputModuleIdEditText.getText().toString();
+        String moduleMacStr = mInputModuleIdEditText.getText().toString();
 
-        long tmpModuleId = -1;
-        try {
-            tmpModuleId = Long.parseLong(moduleIdStr);
-        } catch (Exception e) {
-            Log.e(TAG, "onClick: illegal module id.", e);
+        LittleItem item = new LittleItem();
+        TagModule tag = new TagModule();
+
+        // check tag module info.
+        if (moduleIdStr.length() == 0 && moduleMacStr.length() == 0) {
+            mErrInputModuleIdTextView.setText("模块ID 和 模块地址不能都空");
+            illegalItemName = true;
+        } else if (moduleIdStr.length() == 0) {
+            // mac not null.
+            if (moduleMacStr.length() != MAC_LENGTH) {
+                mErrInputModuleIdTextView.setText("模块MAC应为16位");
+                mInputModuleIdEditText.setSelectAllOnFocus(true);
+                mInputModuleIdEditText.clearFocus();
+                illegalItemName = true;
+            }
         }
-        moduleId = tmpModuleId;
 
-        if (moduleId == -1) {
-            mErrInputModuleIdTextView.setText("模块ID输入有误！");
-            mInputModuleIdEditText.setSelectAllOnFocus(true);
-            mInputModuleIdEditText.clearFocus();
-            illegalModuleId= true;
-        }
-
+        // check item name.
         if (inputName.length() == 0) {
             mErrInputNameTextView.setText("物品名不能为空！");
             illegalItemName = true;
         }
+
         if (illegalModuleId || illegalItemName) {
             return null;
         }
-        LittleItem item = new LittleItem();
+
+        // set module. info.
+        if(moduleIdStr.length() != 0) {
+            tag.setModuleId(Long.parseLong(moduleIdStr));
+        }
+
+        tag.setModuleMAC(moduleMacStr);
+
+        // set item info.
         item.setUserId(TestData.fakeUserId);
-        item.setModuleId(moduleId);
         item.setItemName(inputName);
+        item.setBindTagModule(tag);
 
         return item;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        return dialog;
     }
 
     @Nullable
@@ -87,10 +121,14 @@ public class AddItemDialog extends DialogFragment implements View.OnClickListene
         // Bind view component.
         mInputNameEditText = (EditText) view.findViewById(R.id.edit_add_or_edit_item_name);
         mInputModuleIdEditText = (EditText) view.findViewById(R.id.edit_add_or_edit_module_id);
+        mInputModuleMacEditText = (EditText) view.findViewById(R.id.edit_add_or_edit_module_mac);
+
 
         mConfirmButton = (Button) view.findViewById(R.id.btn_add_or_edit_item_confirm);
         mCancelButton = (Button) view.findViewById(R.id.btn_add_or_edit_item_cancel);
-        mSelectModuleButton = (Button) view.findViewById(R.id.btn_add_or_edit_select_module);
+        mSelectExistModuleButton = (Button) view.findViewById(R.id.btn_add_or_edit_select_used_module);
+
+        mSearchModuleButton = (Button) view.findViewById(R.id.btn_add_or_edit_search_module);
 
         mErrInputNameTextView = (TextView) view.findViewById(R.id.text_add_or_edit_item_err_input_name);
         mErrInputModuleIdTextView = (TextView) view.findViewById(R.id.text_add_or_edit_item_err_module_id);
@@ -98,7 +136,7 @@ public class AddItemDialog extends DialogFragment implements View.OnClickListene
         // set click.
         mConfirmButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
-        mSelectModuleButton.setOnClickListener(this);
+        mSearchModuleButton.setOnClickListener(this);
 
 
         // If user had input illegal name or module id, and changed the input text latter, clear
@@ -118,7 +156,7 @@ public class AddItemDialog extends DialogFragment implements View.OnClickListene
                 }
             }
         });
-
+        // handle illegal input reminder text.
         mInputModuleIdEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -176,8 +214,19 @@ public class AddItemDialog extends DialogFragment implements View.OnClickListene
                 }
                 break;
 
+            case R.id.btn_add_or_edit_search_module:
+
+                SelectTagModuleDialog selectTagDialog = new SelectTagModuleDialog();
+                selectTagDialog.setTargetFragment(this, 0);
+                selectTagDialog.show(getFragmentManager(), "selectTagModuleDialog");
+                break;
             case R.id.btn_add_or_edit_item_cancel:
                 dismiss();
         }
+    }
+
+    @Override
+    public void selectModuleDone(TagModule newTag) {
+        mInputModuleIdEditText.setText(newTag.getModuleMAC());
     }
 }

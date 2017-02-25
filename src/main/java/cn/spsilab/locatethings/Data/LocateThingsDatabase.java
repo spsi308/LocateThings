@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import cn.spsilab.locatethings.Data.LocateThingsDbContract.ItemEntity;
+import cn.spsilab.locatethings.Data.LocateThingsDbContract.TagModuleEntity;
+import cn.spsilab.locatethings.tag.TagModule;
 
 /**
  * Created by changrq on 17-2-17.
@@ -26,6 +28,7 @@ public class LocateThingsDatabase {
     private LocateThingsDatabase(Context context) {
         LocateThingsDbHelper mDbHelper = new LocateThingsDbHelper(context);
         mDb = mDbHelper.getWritableDatabase();
+        //mDbHelper.onUpgrade(mDb, 3, 3);
     }
 
     public static LocateThingsDatabase getInstance(Context context) {
@@ -35,6 +38,7 @@ public class LocateThingsDatabase {
 
         return itemDataBaseInstance;
     }
+
     /**
      * Using the data that cursor now pointing to, and instantiate a item.
      * @param cursor
@@ -46,7 +50,13 @@ public class LocateThingsDatabase {
         item.setItemId(cursor.getLong(cursor.getColumnIndex(ItemEntity._ID)));
         item.setItemName(cursor.getString(cursor.getColumnIndex(ItemEntity.COLUMN_ITEM_NAME)));
         item.setUserId(cursor.getLong(cursor.getColumnIndex(ItemEntity.COLUMN_OWN_BY_USER)));
-        item.setModuleId(cursor.getLong(cursor.getColumnIndex(ItemEntity.COLUMN_BIND_MODULE)));
+
+        TagModule bindTag = new TagModule();
+
+        bindTag.setModuleMAC(cursor.getString(cursor.getColumnIndex(TagModuleEntity.COLUMN_MAC_ADDR)));
+        bindTag.setModuleId(cursor.getLong(cursor.getColumnIndex(ItemEntity.COLUMN_BIND_MODULE)));
+
+        item.setBindTagModule(bindTag);
 
         item.setCreateTime(Timestamp.valueOf(cursor.getString(
                 cursor.getColumnIndex(ItemEntity.COLUMN_CREATE_TIMESTAMP))));
@@ -71,23 +81,20 @@ public class LocateThingsDatabase {
     }
 
     /**
-     * query database using specify user id and return a cursor, soring by create time.
+     * query database using specify user id and return a cursor, query use outer join with
+     * TagModule table.
      * @param uid
      * @return
      */
     private Cursor getItemsCursorByUserId(long uid) {
-        String selection = ItemEntity.COLUMN_OWN_BY_USER + " = ?";
-        String[] selectionArgs = { String.valueOf(uid) };
+        final String rawQuery = "SELECT * FROM " + ItemEntity.TABLE_NAME + " LEFT OUTER JOIN "
+                + TagModuleEntity.TABLE_NAME + " ON " + ItemEntity.TABLE_NAME + "."
+                + ItemEntity.COLUMN_BIND_MODULE + "=" + TagModuleEntity.TABLE_NAME+"."
+                + TagModuleEntity._ID + " WHERE " + ItemEntity.TABLE_NAME + "."
+                + ItemEntity.COLUMN_OWN_BY_USER + "=?";
 
-        return mDb.query(ItemEntity.TABLE_NAME,
-                null,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                ItemEntity.COLUMN_MODIFY_TIMESTAMP + " DESC");
+        return mDb.rawQuery(rawQuery, new String[]{String.valueOf(uid)});
     }
-
 
 
     /**
@@ -110,14 +117,67 @@ public class LocateThingsDatabase {
     }
 
     /**
+     * get tag module by specify tag mac.
+     * @param mac
+     * @return if exists, return object, otherwise return null.
+     */
+    public TagModule getTagModuleIdByMac(String mac) {
+        String selection = TagModuleEntity.COLUMN_MAC_ADDR + " = ?";
+        String[] selectionArgs = { mac };
+
+        Cursor queryTagCursor = mDb.query(TagModuleEntity.TABLE_NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+
+        if (queryTagCursor.moveToFirst()) {
+            TagModule tag = new TagModule();
+            tag.setModuleId(queryTagCursor.getLong(
+                    queryTagCursor.getColumnIndex(TagModuleEntity._ID)));
+
+            tag.setModuleMAC(queryTagCursor.getString(
+                    queryTagCursor.getColumnIndex(TagModuleEntity.COLUMN_MAC_ADDR)));
+            return tag;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * insert a new tag to database.
+     * @param tag
+     * @return the row id that newly inserted.
+     */
+    public long insertNewTagModule(TagModule tag) {
+
+        ContentValues tagCV = new ContentValues();
+
+        tagCV.put(TagModuleEntity.COLUMN_MAC_ADDR, tag.getModuleMAC());
+
+        return mDb.insert(TagModuleEntity.TABLE_NAME, null, tagCV);
+    }
+
+    /**
      * Add item to database, createTime timestamp will be auto added by sqlite.
      * @param g
-     * @return
+     * @return newly inserted row id.
      */
-    public long addItem(LittleItem g) {
-        String itemName = g.getItemName();
+    public synchronized long addItem(LittleItem g) {
         long userId = g.getUserId();
-        long moduleId = g.getModuleId();
+        long moduleId;
+        String itemName = g.getItemName();
+        String bindTagMac  = g.getBindTagModule().getModuleMAC();
+
+        // get tag id.
+        TagModule bindTag = getTagModuleIdByMac(bindTagMac);
+        if (bindTag != null) {
+            moduleId = bindTag.getModuleId();
+        } else {
+            moduleId = insertNewTagModule(g.getBindTagModule());
+        }
 
         ContentValues cv = new ContentValues();
         cv.put(ItemEntity.COLUMN_ITEM_NAME, itemName);
@@ -160,7 +220,7 @@ public class LocateThingsDatabase {
      * @param newItem
      * @return
      */
-    public int updateItemById(long itemId, LittleItem newItem) {
+    public synchronized int updateItemById(long itemId, LittleItem newItem) {
         LittleItem modifyItem = getItemById(itemId);
         modifyItem.setItemId(newItem.getItemId());
         modifyItem.setItemName(newItem.getItemName());
@@ -179,8 +239,25 @@ public class LocateThingsDatabase {
         if (newItem.getUserId() != -1) {
             cv.put(ItemEntity.COLUMN_OWN_BY_USER, newItem.getUserId());
         }
-        if (newItem.getModuleId() != -1) {
-            cv.put(ItemEntity.COLUMN_BIND_MODULE, newItem.getModuleId());
+
+        // if set bind module, get id.        if tag is new, insert it.
+        if (newItem.getBindTagModule() != null) {
+            TagModule newTag = newItem.getBindTagModule();
+            long moduleId;
+
+            if (newTag.getModuleId() != -1) {
+                moduleId = newTag.getModuleId();
+            } else {
+                TagModule existsTag;
+                existsTag = getTagModuleIdByMac(newItem.getBindTagModule().getModuleMAC());
+                if (existsTag != null) {
+                    moduleId = existsTag.getModuleId();
+                } else {
+                    moduleId = insertNewTagModule(newTag);
+                }
+
+            }
+            cv.put(ItemEntity.COLUMN_BIND_MODULE, moduleId);
         }
 
         cv.put(ItemEntity.COLUMN_MODIFY_TIMESTAMP, nowTimeStamp.toString());
