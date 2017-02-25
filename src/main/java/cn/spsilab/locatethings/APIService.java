@@ -4,13 +4,18 @@ import java.util.Map;
 
 import cn.spsilab.locatethings.module.ResponseResult;
 import cn.spsilab.locatethings.module.User;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -20,17 +25,22 @@ import retrofit2.http.Url;
 
 public interface APIService {
 
-    // user
+
+    @FormUrlEncoded
     @POST("/api/login")
-    Call<ResponseResult<Map<String, Object>>> login(@Query("name") String userName, @Query("password") String password);
+    Call<ResponseResult<Map<String, Object>>> login(@Field("name") String userName, @Field("password") String password);
 
+    @FormUrlEncoded
     @POST("/api/regist")
-    Call<ResponseResult<Map<String, Object>>> regist(@Query("name") String userName, @Query("phone") String phone, @Query("password") String password);
+    Call<ResponseResult<Map<String, Object>>> regist(
+            @Field("name") String userName,
+            @Field("phone") String phone,
+            @Field("password") String password);
 
-    @GET("/api/user/info/{id}")
+    @GET("/api/user/{id}")
     Call<ResponseResult<Map<String, Object>>> getUserInfo(@Path("id") long id);
 
-    @POST("/api/user/info/update")
+    @POST("/api/user/update")
     Call<ResponseResult<Map<String, Object>>> updateUserInfo(@Body User user);
 
 /*    // Item
@@ -58,4 +68,25 @@ public interface APIService {
 
     @GET
     Call<ResponseBody> getPicture(@Url String url);
+
+    /**
+     * upload image result contain the image url
+     *
+     * @param file
+     * @return
+     */
+    @Multipart
+    @POST("/api/image/upload")
+    Call<ResponseResult<Map<String, Object>>> uploadImage(@Part MultipartBody.Part file);
+
+    @Multipart
+    @POST("/api/image/change")
+    Call<ResponseResult<Map<String, Object>>> upload(
+            @Part("id") RequestBody id,
+            @Part("type") RequestBody type,
+            @Part MultipartBody.Part file);
+
+
+
+
 }

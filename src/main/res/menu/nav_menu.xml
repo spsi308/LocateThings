@@ -7,7 +7,7 @@
     <item android:id="@+id/menu_user_info"
           android:icon="@drawable/info"
           android:title="@string/str_menu_user_info"
-          android:visible="true"
+          android:visible="false"
         />
     <item
         android:id="@+id/menu_app_about"

@@ -2,6 +2,7 @@ package cn.spsilab.locatethings;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -43,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private LocateThingsDatabase mDatabase;
 
-    private String title;
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
 
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mRecycerView = (RecyclerView) findViewById(R.id.recyclerview_item_list);
-        title = (String) this.getTitle();
 
         // instantiate layoutManager and RecyclerView adapter.
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
         mDatabase.insertTestData();
 
         // set adapter data.
-        ArrayList<LittleItem> itemsArray =mDatabase.getItemsByUserId(TestData.fakeUserId);
+        ArrayList<LittleItem> itemsArray = mDatabase.getItemsByUserId(TestData.fakeUserId);
         mRecyclerViewAdapter.setItemsArrayList(itemsArray);
 
         // enable RecyclerView.
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements
 
         setSupportActionBar(toolbar);
 
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.on_drawer_open,R.string.on_drawer_close);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.on_drawer_open, R.string.on_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
@@ -90,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements
 //        });
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavMenuItemClickListener(this, drawerLayout, mRecycerView));
+        navigationView.setNavigationItemSelectedListener(new NavMenuItemClickListener(this, drawerLayout, mRecycerView, toolbar));
+
     }
 
     @Override
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
 
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
@@ -114,26 +113,28 @@ public class MainActivity extends AppCompatActivity implements
         if (mRecycerView.getVisibility() == View.INVISIBLE) {
             mRecycerView.setVisibility(View.VISIBLE);
         }
+        // drawerlayout can drawer
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_action_bar,menu);
+        inflater.inflate(R.menu.main_action_bar, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.btn_add :
+        switch (item.getItemId()) {
+            case R.id.btn_add:
                 //Toast.makeText(this,"add",Toast.LENGTH_SHORT).show();
                 FragmentManager fm = getFragmentManager();
                 AddItemDialog addDialog = new AddItemDialog();
                 addDialog.show(fm, "AddItemDialog");
                 break;
-            case R.id.btn_setting :
-                Toast.makeText(this,"setting",Toast.LENGTH_SHORT).show();
+            case R.id.btn_setting:
+                Toast.makeText(this, "setting", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -182,7 +183,9 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerViewAdapter.adapterListRemoveItem(inAdapterPosi);
     }
 
-
+    /**
+     * if you login on the loginActivity , this method will be invoke
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == getResources().getInteger(R.integer.LOGIN_STATUS)) {
@@ -193,29 +196,50 @@ public class MainActivity extends AppCompatActivity implements
             if (requestCode == getResources().getInteger(R.integer.LOGIN_FAILED)) {
                 Log.d(TAG, data.getStringExtra("msg"));
             }
+        } else if (requestCode == getResources().getInteger(R.integer.SELECT_IMG)) {
+            Uri selectedImageUri = data.getData();
+            Log.d(TAG, selectedImageUri.getPath());
+            Toast.makeText(this, "select img", Toast.LENGTH_SHORT).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    /**
+     * network callback
+     */
     @Override
     public void onSuccess(ResponseResult result) {
         if (result.getStatus() == getResources().getInteger(R.integer.LOGIN_SUCCESS)) {
             loginSucess();
+        } else if (result.getStatus() == getResources().getInteger(R.integer.UPDATE_SUCCESS)) {
+            onUserinfoUpdate();
         }
-
     }
 
+    /**
+     * network callback
+     */
     @Override
     public void onFailure(ResponseResult result, Throwable t) {
 
     }
 
+    /**
+     * if login success, the nav will show userInfo,logout btn,and remove login btn
+     * set the header img and user name
+     */
     private void loginSucess() {
         //remove login btn
         navigationView.getMenu().getItem(0).setVisible(false);
         navigationView.getMenu().getItem(1).setVisible(true);
         navigationView.getMenu().getItem(3).setVisible(true);
+        onUserinfoUpdate();
+    }
+
+    private void onUserinfoUpdate() {
         View view = navigationView.getHeaderView(0);
-        //if login ,change the header img and username
+        //change the header img and username
         ImageView userHeaderImg = (ImageView) view.findViewById(R.id.img_user_header);
         TextView userNameText = (TextView) view.findViewById(R.id.str_user_name);
         StatusApplication statusApplication = (StatusApplication) getApplicationContext();
@@ -224,19 +248,20 @@ public class MainActivity extends AppCompatActivity implements
             userNameText.setText(statusApplication.getUser().getName());
             NetworkService.getInstance().getPicture(statusApplication.getUser().getPhoto(), userHeaderImg, R.drawable.user);
         }
-
     }
 
+    /**
+     * show login btn,change default user header image
+     */
     public void logout() {
         //remove logout btn
         navigationView.getMenu().getItem(3).setVisible(false);
         navigationView.getMenu().getItem(1).setVisible(false);
         navigationView.getMenu().getItem(0).setVisible(true);
-        View view = navigationView.getHeaderView(1);
         //if login ,change the header img and username
         ImageView userHeaderImg = (ImageView) navigationView.findViewById(R.id.img_user_header);
         TextView userNameText = (TextView) navigationView.findViewById(R.id.str_user_name);
         userHeaderImg.setImageResource(R.drawable.user);
-        userNameText.setText("登录");
+        userNameText.setText("login");
     }
 }

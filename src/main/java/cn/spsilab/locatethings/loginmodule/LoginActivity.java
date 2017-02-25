@@ -1,7 +1,6 @@
 package cn.spsilab.locatethings.loginmodule;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +16,7 @@ import android.widget.Toast;
 import cn.spsilab.locatethings.NetworkService;
 import cn.spsilab.locatethings.R;
 import cn.spsilab.locatethings.module.ResponseResult;
+import pl.droidsonroids.gif.GifImageView;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, NetworkService.NetworkCallback{
@@ -30,6 +30,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             passwdTextView,
             nameWarningTextView,
             passwordWarningTextView;
+
+    private GifImageView gifLoader;
 
     private boolean isCorrectFormat = true;
 
@@ -48,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwdTextView = (TextView) findViewById(R.id.edit_login_password);
         nameWarningTextView = (TextView) findViewById(R.id.text_login_user_name_warning);
         passwordWarningTextView = (TextView) findViewById(R.id.text_login_password_warning);
+        gifLoader = (GifImageView) findViewById(R.id.img_login_loader);
 
         clearNameBtn.setOnClickListener(this);
         clearPasswordBtn.setOnClickListener(this);
@@ -103,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (checkInput()) {
                     login();
                     loginBtn.setClickable(false);
+                    gifLoader.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.btn_register :
@@ -137,15 +141,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onSuccess(ResponseResult result) {
         int status = result.getStatus();
         if (status == idToInt(R.integer.LOGIN_SUCCESS)) {
-            Toast.makeText(this, "login success", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, result.getMsg(), Toast.LENGTH_SHORT).show();
             //login success , user data will be save in SatusApplication
             setResult(status);
             finish();
-            onBackPressed();
+//            onBackPressed();
         } else if (status == idToInt(R.integer.REGIST_SUCCESS)) {
-            Toast.makeText(this, "regist success", Toast.LENGTH_SHORT).show();
-            onBackPressed();
+            Toast.makeText(this, result.getMsg(), Toast.LENGTH_SHORT).show();
+//            onBackPressed();
         }
+        gifLoader.setVisibility(View.INVISIBLE);
+        onBackPressed();
     }
 
     @Override
@@ -153,20 +159,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         int status = result.getStatus();
 
         if (status == idToInt(R.integer.LOGIN_FAILED)) {
-            Toast.makeText(this, "login failed", Toast.LENGTH_SHORT).show();
-            Intent intent = getIntent();
+            Toast.makeText(this, result.getMsg(), Toast.LENGTH_SHORT).show();
+/*            Intent intent = getIntent();
             intent.putExtra("msg", result.getMsg());
             setResult(status, intent);
-            finish();
+            finish();*/
         } else if (status == idToInt(R.integer.NO_CONNECTION)) {
-            Toast.makeText(this, "no network", Toast.LENGTH_SHORT).show();
-            Intent intent = getIntent();
+            Toast.makeText(this, result.getMsg(), Toast.LENGTH_SHORT).show();
+/*            Intent intent = getIntent();
             intent.putExtra("msg", result.getMsg());
             setResult(idToInt(R.integer.NO_CONNECTION), intent);
-            finish();
+            finish();*/
         } else if (status == idToInt(R.integer.REGIST_FAILED)) {
-            Toast.makeText(this, "regist failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, result.getMsg(), Toast.LENGTH_SHORT).show();
         }
+        gifLoader.setVisibility(View.INVISIBLE);
         loginBtn.setClickable(true);
     }
 

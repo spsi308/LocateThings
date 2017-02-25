@@ -122,4 +122,14 @@
             android:textSize="16sp"
             android:visibility="visible" />
     </RelativeLayout>
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/img_login_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/loader"
+        android:visibility="invisible"/>
+
 </RelativeLayout>
