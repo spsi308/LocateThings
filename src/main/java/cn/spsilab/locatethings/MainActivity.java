@@ -252,11 +252,11 @@ public class MainActivity extends AppCompatActivity implements
         //change the header img and username
         ImageView userHeaderImg = (ImageView) view.findViewById(R.id.img_user_header);
         TextView userNameText = (TextView) view.findViewById(R.id.str_user_name);
-        StatusApplication statusApplication = (StatusApplication) getApplicationContext();
+        LocateThings locateThings = (LocateThings) getApplicationContext();
 
-        if (statusApplication.getUser() != null) {
-            userNameText.setText(statusApplication.getUser().getName());
-            NetworkService.getInstance().getPicture(statusApplication.getUser().getPhoto(), userHeaderImg, R.drawable.user);
+        if (locateThings.getUser() != null) {
+            userNameText.setText(locateThings.getUser().getName());
+            NetworkService.getInstance().getPicture(locateThings.getUser().getPhoto(), userHeaderImg, R.drawable.user);
         }
     }
 

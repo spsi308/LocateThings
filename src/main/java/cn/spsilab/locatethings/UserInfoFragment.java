@@ -37,7 +37,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private View showLayout;
     private View editLayout;
     private User user;
-    private StatusApplication statusApplication;
+    private LocateThings statusApplication;
     private boolean editMode = false;
     private GifImageView gifLoader;
     private NetworkService.NetworkCallback networkCallback;
@@ -150,7 +150,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
      * 3：加载头像
      */
     private void init() {
-        statusApplication = (StatusApplication) getContext().getApplicationContext();
+        statusApplication = (LocateThings) getContext().getApplicationContext();
         if (statusApplication.getLoginStatus() == getResources().getInteger(R.integer.LOGIN)) {
             user = statusApplication.getUser();
             if (user == null) {
@@ -188,7 +188,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                         userNameTextView.setText(user.getName());
                         phoneTextView.setText(user.getPhone());
                         // save in statusApplication
-                        StatusApplication statusApplication = (StatusApplication) getContext().getApplicationContext();
+                        LocateThings statusApplication = (LocateThings) getContext().getApplicationContext();
                         statusApplication.setUser(user);
                         showLayout.setVisibility(View.VISIBLE);
                         editLayout.setVisibility(View.INVISIBLE);

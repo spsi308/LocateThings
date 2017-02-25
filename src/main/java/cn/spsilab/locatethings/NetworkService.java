@@ -55,8 +55,8 @@ public class NetworkService {
     private NetworkService() {
 
 //        final String BASE_URL = "http://192.168.0.100:5000/";
-//        final String BASE_URL = "http://192.168.1.84:5000/";
-        final String BASE_URL = "http://10.0.2.2:5000/";
+        final String BASE_URL = "http://192.168.1.84:5000/";
+//        final String BASE_URL = "http://10.0.2.2:5000/";
         httpClient = new OkHttpClient.Builder();
         httpClient.connectTimeout(3000, TimeUnit.MILLISECONDS);
         Retrofit.Builder builder = new Retrofit.Builder()
@@ -84,7 +84,7 @@ public class NetworkService {
      */
     public static boolean checkIsLogin(Context context) {
 
-        StatusApplication statusApplication = (StatusApplication) context.getApplicationContext();
+        LocateThings statusApplication = (LocateThings) context.getApplicationContext();
         return statusApplication.getLoginStatus() == context.getResources().getInteger(R.integer.LOGIN);
     }
 
@@ -205,7 +205,7 @@ public class NetworkService {
      * logout
      */
     public void logout(Context context) {
-        StatusApplication statusApplication = (StatusApplication) context.getApplicationContext();
+        LocateThings statusApplication = (LocateThings) context.getApplicationContext();
         statusApplication.setLoginStatus(idTOInt(context, R.integer.LOGIN));
         statusApplication.setToken(null);
         statusApplication.setUser(null);
@@ -552,7 +552,7 @@ public class NetworkService {
         }
         Log.d(TAG, u.toString());
         saveInSharedPeference(u, password, context);
-        StatusApplication statusApplication = (StatusApplication) context.getApplicationContext();
+        LocateThings statusApplication = (LocateThings) context.getApplicationContext();
         statusApplication.setLoginStatus(idTOInt(context, R.integer.LOGIN));
         statusApplication.setToken(u.getToken());
         statusApplication.setUser(u);
