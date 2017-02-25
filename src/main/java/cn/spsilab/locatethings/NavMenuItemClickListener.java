@@ -46,6 +46,8 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
             break;
             case R.id.menu_user_info: {
                 toolbar.setTitle("user info");
+                toolbar.setNavigationIcon(null);
+                toolbar.getMenu().setGroupVisible(0, false);
                 Fragment infoFragment = new UserInfoFragment();
                 recyclerView.setVisibility(View.INVISIBLE);
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);

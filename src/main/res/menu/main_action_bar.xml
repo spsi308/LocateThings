@@ -4,19 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
-    <item android:title="add"
-        android:id="@+id/btn_add"
-        android:icon="@drawable/add_2"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:title="setting"
-        android:id="@+id/btn_setting"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        />
-    <item
-        android:title="BLUETOOTH"
-        android:id="@+id/btn_blue_test"
-        app:showAsAction="always"
-        />
+    <group>
+        <item
+            android:id="@+id/btn_add"
+            android:icon="@drawable/add_2"
+            android:title="add"
+            app:showAsAction="ifRoom"
+            />
+        <item
+            android:id="@+id/btn_setting"
+            android:orderInCategory="100"
+            android:title="setting"
+            app:showAsAction="never"
+            />
+        <item
+            android:id="@+id/btn_blue_test"
+            android:title="BLUETOOTH"
+            app:showAsAction="always"
+            />
+    </group>
+
 </menu>

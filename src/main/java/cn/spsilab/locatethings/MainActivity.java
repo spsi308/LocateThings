@@ -29,9 +29,8 @@ import cn.spsilab.locatethings.Data.TestData;
 import cn.spsilab.locatethings.module.ResponseResult;
 
 public class MainActivity extends AppCompatActivity implements
-        ItemListRecyclerAdapter.ItemAdapterOnClickHandler,
-        ItemOperateHandler, NetworkService.NetworkCallback {
-    private final String TAG = MainActivity.class.toString();
+        ItemListRecyclerAdapter.ItemAdapterOnClickHandler, ItemOperateHandler, NetworkService.NetworkCallback {
+    private final String TAG = "Main Activity";
 
     private DrawerLayout drawerLayout;
 
@@ -90,14 +89,29 @@ public class MainActivity extends AppCompatActivity implements
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(new NavMenuItemClickListener(this, drawerLayout, mRecycerView, toolbar));
+        getSupportFragmentManager().addOnBackStackChangedListener(new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                    // in main activity view
+                    mRecycerView.setVisibility(View.VISIBLE);
+                    // drawerlayout can drawer
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                    toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
+                    toolbar.setTitle("Locate things");
+                }
 
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // when open the app auto login
-//        NetworkService.getInstance().autoLogin(this);
+        if (NetworkService.checkIsLogin(this)) {
+            loginSucess();
+        }
     }
 
     /**
@@ -105,21 +119,12 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onBackPressed() {
-
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
-            Log.d(TAG, "onBackPressed: popbackstack!");
-            getFragmentManager().popBackStack();
-        } else {
+        else
             super.onBackPressed();
-        }
 
-        if (mRecycerView.getVisibility() == View.INVISIBLE) {
-            mRecycerView.setVisibility(View.VISIBLE);
-        }
-        // drawerlayout can drawer
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
     }
 
     @Override
@@ -174,11 +179,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAddItem(LittleItem newItem) {
         // update sql
-        long itemId = mDatabase.addItem(newItem);
-
-        // set item id.
-        newItem.setItemId(itemId);
-
+        mDatabase.addItem(newItem);
         // update recyclerView adapter.
         mRecyclerViewAdapter.adapterListAddItem(newItem);
     }

@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import cn.spsilab.locatethings.module.ResponseResult;
 import cn.spsilab.locatethings.module.User;
@@ -57,7 +58,7 @@ public class NetworkService {
 //        final String BASE_URL = "http://192.168.1.84:5000/";
         final String BASE_URL = "http://10.0.2.2:5000/";
         httpClient = new OkHttpClient.Builder();
-
+        httpClient.connectTimeout(3000, TimeUnit.MILLISECONDS);
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create());
@@ -65,7 +66,6 @@ public class NetworkService {
         // TODO: 2/19/2017 change the log level
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         httpClient.addInterceptor(loggingInterceptor);
-
         retrofit = builder.client(httpClient.build()).build();
     }
 
