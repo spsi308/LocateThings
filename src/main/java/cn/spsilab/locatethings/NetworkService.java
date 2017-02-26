@@ -85,7 +85,18 @@ public class NetworkService {
     public static boolean checkIsLogin(Context context) {
 
         LocateThings statusApplication = (LocateThings) context.getApplicationContext();
-        return statusApplication.getLoginStatus() == context.getResources().getInteger(R.integer.LOGIN);
+        if (statusApplication.getLoginStatus() == context.getResources().getInteger(R.integer.LOGIN)) {
+            return true;
+        } else {
+            SharedPreferences sh = context.getSharedPreferences(context.getString(R.string.PREFERENCE_FILE_KEY), Context.MODE_PRIVATE);
+            int status = sh.getInt(context.getString(R.string.LOGIN_STATUS), 0);
+            int login = context.getResources().getInteger(R.integer.LOGIN);
+            if (status == login) {
+                statusApplication.setLoginStatus(login);
+                return true;
+            }
+            return false;
+        }
     }
 
     public <S> S getService(Class<S> serviceClass) {
@@ -121,15 +132,16 @@ public class NetworkService {
         String userName = sharedPreferences.getString(idToString(context, R.string.USER_NAME), null);
         String password = sharedPreferences.getString(idToString(context, R.string.PASSWORD), null);
         if (userName == null || password == null) {
+            Log.d(TAG, "need login");
             loginCallback.onFailure(
                     ResponseResult.build(
                             idTOInt(context, R.integer.LOGIN_FAILED), "Need login"),
                     new RuntimeException("not found saved user info"));
         }
-        // TODO: 2/20/2017 判断token是否过期，是否有效，
-        {
-        }
-        login(userName, password, context);
+        //token check in server, client only save,
+//        {
+//        }
+//        login(userName, password, context);
 
     }
 
@@ -207,7 +219,7 @@ public class NetworkService {
      */
     public void logout(Context context) {
         LocateThings statusApplication = (LocateThings) context.getApplicationContext();
-        statusApplication.setLoginStatus(idTOInt(context, R.integer.LOGIN));
+        statusApplication.setLoginStatus(idTOInt(context, R.integer.LOGOUT));
         statusApplication.setToken(null);
         statusApplication.setUser(null);
         SharedPreferences sh = context.getSharedPreferences(idToString(context,
@@ -216,6 +228,8 @@ public class NetworkService {
         edit.remove(idToString(context, R.string.USER_NAME));
         edit.remove(idToString(context, R.string.PASSWORD));
         edit.remove(idToString(context, R.string.TOKEN));
+        edit.remove(idToString(context, R.string.LOGIN_STATUS));
+        edit.remove(idToString(context, R.string.PHOTO));
         edit.commit();
         Log.d(TAG, "logout success");
     }
@@ -570,6 +584,8 @@ public class NetworkService {
         edit.putString(idToString(context, R.string.USER_NAME), user.getName());
         edit.putString(idToString(context, R.string.PASSWORD), password);
         edit.putString(idToString(context, R.string.TOKEN), user.getToken());
+        edit.putString(idToString(context, R.string.PHOTO), user.getPhoto());
+        edit.putInt(idToString(context, R.string.LOGIN_STATUS), idTOInt(context, R.integer.LOGIN));
         edit.commit();
     }
 

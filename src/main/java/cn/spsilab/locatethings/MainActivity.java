@@ -99,32 +99,33 @@ public class MainActivity extends AppCompatActivity implements
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                     toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
                     toolbar.setTitle("Locate things");
+                    toolbar.getMenu().setGroupVisible(0, true);
                 }
 
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         // when open the app auto login
         if (NetworkService.checkIsLogin(this)) {
             loginSucess();
         }
+
     }
+
 
     /**
      * when back press , close the drawerlayout
      */
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        Log.d(TAG, "back 1");
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            Log.d(TAG, "back 2");
             drawerLayout.closeDrawer(GravityCompat.START);
-        else
+        } else {
+            Log.d(TAG, "back 3");
             super.onBackPressed();
-
-
+        }
     }
 
     @Override

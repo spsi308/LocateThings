@@ -31,4 +31,10 @@ public class SplashActivity extends Activity implements NetworkService.NetworkCa
         startActivity(intent);
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "Splash back", Toast.LENGTH_SHORT).show();
+        super.onBackPressed();
+    }
 }
