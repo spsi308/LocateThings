@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import cn.spsilab.locatethings.Data.LittleItem;
 import cn.spsilab.locatethings.Data.LocateThingsDatabase;
 import cn.spsilab.locatethings.Data.TestData;
+import cn.spsilab.locatethings.loginmodule.LoginService;
 import cn.spsilab.locatethings.module.ResponseResult;
 
 public class MainActivity extends AppCompatActivity implements
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         // when open the app auto login
-        if (NetworkService.checkIsLogin(this)) {
+        if (LoginService.checkIsLogin(this)) {
             loginSucess();
         }
 
@@ -118,12 +119,9 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "back 1");
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            Log.d(TAG, "back 2");
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            Log.d(TAG, "back 3");
             super.onBackPressed();
         }
     }
@@ -257,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if (locateThings.getUser() != null) {
             userNameText.setText(locateThings.getUser().getName());
-            NetworkService.getInstance().getPicture(locateThings.getUser().getPhoto(), userHeaderImg, R.drawable.user);
+            PictureUtil.getPicture(locateThings.getUser().getPhoto(), userHeaderImg, R.drawable.user);
         }
     }
 

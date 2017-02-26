@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import cn.spsilab.locatethings.loginmodule.LoginActivity;
+import cn.spsilab.locatethings.loginmodule.LoginService;
 
 /**
  * Created by Feng on 2/17/2017.
@@ -70,7 +71,7 @@ class NavMenuItemClickListener implements NavigationView.OnNavigationItemSelecte
                         .commit();
             }
             case R.id.menu_user_logout: {
-                NetworkService.getInstance().logout(mainActivity);
+                new LoginService().logout(mainActivity);
                 mainActivity.logout();
             }
             break;

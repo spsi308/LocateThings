@@ -119,7 +119,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             headerImg.setImageBitmap(imgBitMap);
             Toast.makeText(getContext(), "select img", Toast.LENGTH_SHORT).show();
             // upload header
-            NetworkService.getInstance().uploadImg(imgUri, user.getId(), getResources().getInteger(R.integer.TYPE_USER), getContext(), new NetworkService.NetworkCallback() {
+            PictureUtil.uploadImg(imgUri, user.getId(), getResources().getInteger(R.integer.TYPE_USER), getContext(), new NetworkService.NetworkCallback() {
                 @Override
                 public void onSuccess(ResponseResult result) {
                     gifLoader.setVisibility(View.INVISIBLE);
@@ -161,7 +161,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
             userNameEditText.setText(user.getName());
             phoneTextView.setText("Phone:" + user.getPhone());
             phoneTextEdit.setText(user.getPhone());
-            NetworkService.getInstance().getPicture(user.getPhoto(), headerImg, R.drawable.ab_android);
+            PictureUtil.getPicture(user.getPhoto(), headerImg, R.drawable.ab_android);
         }
         gifLoader.setVisibility(View.INVISIBLE);
 

@@ -21,6 +21,7 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, NetworkService.NetworkCallback{
 
+    protected LoginService loginService;
     private Button clearNameBtn,
             clearPasswordBtn,
             loginBtn,
@@ -30,9 +31,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             passwdTextView,
             nameWarningTextView,
             passwordWarningTextView;
-
     private GifImageView gifLoader;
-
     private boolean isCorrectFormat = true;
 
     @Override
@@ -133,8 +132,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void login() {
         String name = nameTextView.getText().toString();
         String password = passwdTextView.getText().toString();
-
-        NetworkService.getInstance().login(name, password, this);
+        if (loginService != null) {
+            loginService = new LoginService();
+        }
+        loginService.login(name, password, this);
     }
 
     @Override

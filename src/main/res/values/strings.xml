@@ -58,6 +58,9 @@
     <string name="PHONE">PHONE</string>
     <string name="EMAIL">EMAIL</string>
     <string name="PHOTO">PHOTO</string>
+    <string name="NETWORK_NO">NETWORK_NO</string>
+    <string name="CHANNEL_NO">CHANNEL_NO</string>
+
     <!--token will be save in Application and shared preference-->
     <string name="TOKEN">TOKEN</string>
     <!--server response code-->

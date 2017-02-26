@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import cn.spsilab.locatethings.NetworkService;
 import cn.spsilab.locatethings.R;
 
 
@@ -29,15 +28,6 @@ public class RegistFragment extends Fragment implements View.OnClickListener {
             phoneWarringText,
             passwordWarringText,
             passwordRepeatWarringText;
-/*    Button clearUserNameBtn,
-            clearPhoneBtn,
-            clearPasswordBtn,
-            clearPasswordRepeatBtn,
-            registBtn;*/
-
-    public RegistFragment() {
-        // Required empty public constructor
-    }
 
 
     @Override
@@ -61,7 +51,6 @@ public class RegistFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.btn_regist_clear_user_password).setOnClickListener(this);
         view.findViewById(R.id.btn_regist_clear_user_password_repeat).setOnClickListener(this);
         view.findViewById(R.id.btn_regist).setOnClickListener(this);
-
 
         return view;
     }
@@ -122,7 +111,7 @@ public class RegistFragment extends Fragment implements View.OnClickListener {
         String phone = phoneEdit.getText().toString();
         String password = passwordEdit.getText().toString();
 
-        NetworkService.getInstance().regist(userName, phone, password, getContext());
+        new LoginService().regist(userName, phone, password, getContext());
 
     }
 

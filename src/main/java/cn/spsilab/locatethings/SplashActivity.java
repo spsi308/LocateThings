@@ -3,38 +3,18 @@ package cn.spsilab.locatethings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import cn.spsilab.locatethings.module.ResponseResult;
+import cn.spsilab.locatethings.loginmodule.LoginService;
 
-public class SplashActivity extends Activity implements NetworkService.NetworkCallback {
+public class SplashActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NetworkService.getInstance().autoLogin(this);
-    }
-
-    @Override
-    public void onSuccess(ResponseResult result) {
-        Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show();
-        startMainActivity();
-    }
-
-    @Override
-    public void onFailure(ResponseResult result, Throwable t) {
-        startMainActivity();
-    }
-
-    private void startMainActivity() {
+        LoginService.checkIsLogin(this);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        Toast.makeText(this, "Splash back", Toast.LENGTH_SHORT).show();
-        super.onBackPressed();
-    }
 }
