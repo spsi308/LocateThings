@@ -49,11 +49,12 @@ public class SelectTagModuleDialog extends DialogFragment implements
     private SelectModuleDoneHandler mSelectDoneHandler;
 
     private boolean firstOpen;
+    private boolean hasModule = false;
 
     private BroadcastReceiver searchFinishedBroadCastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mProcessingProgressBar.getVisibility() == View.VISIBLE) {
+            if (!hasModule) {
                 mProcessingTextView.setText("未能找到模块");
                 mRetryButton.setVisibility(View.VISIBLE);
                 mProcessingProgressBar.setVisibility(View.INVISIBLE);
@@ -68,6 +69,7 @@ public class SelectTagModuleDialog extends DialogFragment implements
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
 
         if (this.getClass() == SelectTagModuleDialog.class) {
@@ -100,9 +102,12 @@ public class SelectTagModuleDialog extends DialogFragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: ");
 
         LocateThings app = (LocateThings) getActivity().getApplication();
+
+
+        Log.d(TAG, "onResume: "+hasModule+" f:" +firstOpen +" p:" +app.isModuleInProcessing());
+
         int bluetoothStatus = app.getBluetoothStatus();
 
         if (bluetoothStatus != BluetoothConstants.STATUS_CONNECTED_TO_RELAY_STATION) {
@@ -114,7 +119,6 @@ public class SelectTagModuleDialog extends DialogFragment implements
             }
 
             if (firstOpen) {
-
                 firstOpen = false;
                 // start a new station select dialog.
                 SelectStationDialog selectStationDialog = new SelectStationDialog();
@@ -140,17 +144,20 @@ public class SelectTagModuleDialog extends DialogFragment implements
             //selectStationDialog.show(getFragmentManager(), "selectStationDialog");
 
         } else {
+            if (!app.isModuleInProcessing()) {
+                // get new tagModuleService and start a query.
+                BluetoothService mBlueService = ((LocateThings) getActivity().getApplication()).getBluetoothService();
+                mTagMoudleService = new TagModuleOperateService(mBlueService, this);
+                mTagMoudleService.queryAvailableModule();
 
-            // get new tagModuleService and start a query.
-            BluetoothService mBlueService = ((LocateThings) getActivity().getApplication()).getBluetoothService();
-            mTagMoudleService = new TagModuleOperateService(mBlueService, this);
-            mTagMoudleService.queryAvailableModule();
+                // register a broadcastReceiver to receive timeout broadcast.
+                IntentFilter filter = new IntentFilter();
+                filter.addAction("ACTION_FINISH_SEARCH_TAG");
 
-            // register a broadcastReceiver to receive timeout broadcast.
-            IntentFilter filter = new IntentFilter();
-            filter.addAction("ACTION_FINISH_SEARCH_TAG");
+                LocalBroadcastManager.getInstance(getActivity()).registerReceiver(searchFinishedBroadCastReceiver, filter);
 
-            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(searchFinishedBroadCastReceiver, filter);
+            }
+
         }
     }
 
@@ -164,6 +171,7 @@ public class SelectTagModuleDialog extends DialogFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.dialog_select_tag_module, container);
         // bind view.
         mModuleListRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_select_module_tag_module_list);
@@ -201,9 +209,12 @@ public class SelectTagModuleDialog extends DialogFragment implements
     @Override
     public void onAddTag(TagModule newTag) {
         // if the tag is the first tag that to be added in adapter.
-        if (mProcessingProgressBar.getVisibility() == View.VISIBLE) {
+
+        if (!hasModule) {
             mProcessingTextView.setVisibility(View.INVISIBLE);
             mProcessingProgressBar.setVisibility(View.INVISIBLE);
+            hasModule = true;
+            Log.d(TAG, "onAddTag: first tag");
         }
 
         Log.d(TAG, "onAddTag: adapter add tag!");
@@ -231,15 +242,19 @@ public class SelectTagModuleDialog extends DialogFragment implements
 
         // start a new thread in tagModuleServiece,
         // blink query will be continuously sending inside the thread
-        mTagMoudleService.blinkModule(tagModule);
+        // new: start a new bink thread will be opened in processing dialog.
+        // mTagMoudleService.blinkModule(tagModule);
 
         // open a processing dialog.
         TagProcessingDialog blinkTagDialog = new TagProcessingDialog();
+        ((LocateThings) getActivity().getApplication()).setModuleInProcessing(true);
 
         // pass hint message.
         Bundle args = new Bundle();
         args.putString("processingText", "标签闪烁中");
+        args.putString("targetTagMac", tagModule.getModuleMAC());
         blinkTagDialog.setArguments(args);
+
 
         // set tagetFragment.  In order to set FinshHandler to processing dialog.
         blinkTagDialog.setTargetFragment(this, 0);

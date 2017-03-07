@@ -137,9 +137,11 @@ public class ItemDetailDialog extends DialogFragment implements
 
             case R.id.btn_item_detail_call:
                 TagProcessingDialog tagProcessingDialog = new TagProcessingDialog();
+
                 args = new Bundle();
                 args.putString("processingText" , "呼叫标签中");
                 args.putString("targetTagMac" ,mItemModuleMacTextView.getText().toString());
+                ((LocateThings)getActivity().getApplication()).setModuleInProcessing(true);
 
                 tagProcessingDialog.setArguments(args);
                 tagProcessingDialog.show(getFragmentManager(), "tagProcessingDialog");
@@ -159,6 +161,7 @@ public class ItemDetailDialog extends DialogFragment implements
         }
 
         TagModule bindModule = item.getBindTagModule();
+
         // check if the item's module id has been updated.
         if (bindModule.getModuleMAC().equals(specifyItem.getBindTagModule().getModuleMAC())) {
             item.setBindTagModule(null);

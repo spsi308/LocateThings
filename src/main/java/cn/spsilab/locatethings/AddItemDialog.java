@@ -61,10 +61,12 @@ public class AddItemDialog extends DialogFragment
         long moduleId;
         String inputName = mInputNameEditText.getText().toString();
         String moduleIdStr = mInputModuleIdEditText.getText().toString();
-        String moduleMacStr = mInputModuleIdEditText.getText().toString();
+        String moduleMacStr = mInputModuleMacEditText.getText().toString();
 
         LittleItem item = new LittleItem();
         TagModule tag = new TagModule();
+
+
 
         // check tag module info.
         if (moduleIdStr.length() == 0 && moduleMacStr.length() == 0) {
@@ -227,6 +229,6 @@ public class AddItemDialog extends DialogFragment
 
     @Override
     public void selectModuleDone(TagModule newTag) {
-        mInputModuleIdEditText.setText(newTag.getModuleMAC());
+        mInputModuleMacEditText.setText(newTag.getModuleMAC());
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import cn.spsilab.locatethings.Data.LittleItem;
+import cn.spsilab.locatethings.tag.SelectTagModuleDialog;
 import cn.spsilab.locatethings.tag.TagModule;
 
 /**
@@ -73,11 +74,11 @@ public class EditItemDialog extends AddItemDialog implements View.OnClickListene
         switch (clickedId) {
             case R.id.btn_add_or_edit_item_confirm:
                 LittleItem updateItem = getUserInput();
+                updateItem.setItemId(specifyItem.getItemId());
                 if (updateItem != null) {
                     dismiss();
                     mEditDoneHandler.onEditDone(updateItem);
                 }
-
                 break;
 
             case R.id.btn_add_or_edit_item_cancel:
@@ -85,7 +86,9 @@ public class EditItemDialog extends AddItemDialog implements View.OnClickListene
                 break;
 
             case R.id.btn_add_or_edit_search_module:
-
+                SelectTagModuleDialog selectTagDialog = new SelectTagModuleDialog();
+                selectTagDialog.setTargetFragment(this, 0);
+                selectTagDialog.show(getFragmentManager(), "selectTagModuleDialog");
         }
 
     }

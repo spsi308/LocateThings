@@ -56,7 +56,9 @@ public class TagModuleOperateService {
             Intent searchTagModuleTimeOut = new Intent();
             searchTagModuleTimeOut.setAction("ACTION_FINISH_SEARCH_TAG");
 
-            LocalBroadcastManager.getInstance(mBindActivity).sendBroadcast(searchTagModuleTimeOut);
+            if (mSendOpThread == null) {
+                LocalBroadcastManager.getInstance(mBindActivity).sendBroadcast(searchTagModuleTimeOut);
+            }
         }
     };
 
@@ -193,7 +195,8 @@ public class TagModuleOperateService {
     public void blinkModule(TagModule tagModule) {
         clearRunningThead();
 
-        Log.d(TAG, "blinkModule: create a blink thread.");
+        Log.d(TAG, "blinkModule: create a blink thread. "
+                + "bink mac " + tagModule.getModuleMAC());
 
         mSendOpThread = new SendOpThread(BLINK_SEND_INTERVAL,
                 OP_BLINK_PRE, convertHexToByte(tagModule.getModuleMAC()));
@@ -262,6 +265,7 @@ public class TagModuleOperateService {
 
                 } catch (Exception e) {
                     Log.e(TAG, "run: sendOp thread exception.", e);
+                    break;
                 }
             }
         }

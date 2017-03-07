@@ -22,6 +22,10 @@ public class ModuleRecyclerAdapter extends RecyclerView.Adapter<ModuleRecyclerAd
 
     private ModuleSelectHandler mClickHandler;
 
+    public ArrayList<TagModule> getTagModuleArrayList() {
+        return mTagModuleArrayList;
+    }
+
     public ModuleRecyclerAdapter(ModuleSelectHandler handler) {
         mTagModuleArrayList = new ArrayList<>();
 

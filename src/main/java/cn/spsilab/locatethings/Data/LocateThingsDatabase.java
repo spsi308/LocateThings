@@ -194,17 +194,13 @@ public class LocateThingsDatabase {
      */
     public LittleItem getItemById(long itemId) {
 
-        String selection = ItemEntity._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(itemId) };
+        final String rawQuery = "SELECT * FROM " + ItemEntity.TABLE_NAME + " LEFT OUTER JOIN "
+                + TagModuleEntity.TABLE_NAME + " ON " + ItemEntity.TABLE_NAME + "."
+                + ItemEntity.COLUMN_BIND_MODULE + "=" + TagModuleEntity.TABLE_NAME+"."
+                + TagModuleEntity._ID + " WHERE " + ItemEntity.TABLE_NAME + "."
+                + ItemEntity._ID + "=?";
 
-        // start a query.
-        Cursor cursor = mDb.query(ItemEntity.TABLE_NAME,
-                null,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null);
+        Cursor cursor  = mDb.rawQuery(rawQuery, new String[]{String.valueOf(itemId)});
 
         // if item exists.
         if (cursor.moveToFirst()) {
@@ -221,10 +217,6 @@ public class LocateThingsDatabase {
      * @return
      */
     public synchronized int updateItemById(long itemId, LittleItem newItem) {
-        LittleItem modifyItem = getItemById(itemId);
-        modifyItem.setItemId(newItem.getItemId());
-        modifyItem.setItemName(newItem.getItemName());
-
         ContentValues cv = new ContentValues();
 
         // TODO: 17-2-16 there should be using a more elegant way to get time stamp.
@@ -240,7 +232,7 @@ public class LocateThingsDatabase {
             cv.put(ItemEntity.COLUMN_OWN_BY_USER, newItem.getUserId());
         }
 
-        // if set bind module, get id.        if tag is new, insert it.
+        // if set bind module, get id.  if tag is new, insert it.
         if (newItem.getBindTagModule() != null) {
             TagModule newTag = newItem.getBindTagModule();
             long moduleId;

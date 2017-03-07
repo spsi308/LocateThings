@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import cn.spsilab.locatethings.LocateThings;
 import cn.spsilab.locatethings.R;
+import cn.spsilab.locatethings.bluetooth.BluetoothService;
 
 /**
  * Created by changrq on 17-2-22.
@@ -26,6 +28,9 @@ public class TagProcessingDialog extends SelectTagModuleDialog {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        BluetoothService bluetoothService = ((LocateThings) getActivity().getApplication()).getBluetoothService();
+        mTagMoudleService = new TagModuleOperateService(bluetoothService, this);
 
         // set dialog not cancelable, only when button clicked, dialog dismiss.
         setCancelable(false);
@@ -44,9 +49,7 @@ public class TagProcessingDialog extends SelectTagModuleDialog {
         super.onResume();
 
         // start blink process.
-        if (mTagMoudleService != null) {
-            mTagMoudleService.blinkModule(targetTag);
-        }
+        mTagMoudleService.blinkModule(targetTag);
     }
 
     @Nullable
@@ -59,16 +62,17 @@ public class TagProcessingDialog extends SelectTagModuleDialog {
         TextView mHintTextView = (TextView) view.findViewById(R.id.text_tag_processing);
 
         // set hint text.
+
         mHintTextView.setText(processingText);
 
         // set button click.
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
-
                 // stop processing.
                 mTagMoudleService.clearRunningThead();
+                ((LocateThings) getActivity().getApplication()).setModuleInProcessing(false);
+                dismiss();
             }
         });
         return view;
